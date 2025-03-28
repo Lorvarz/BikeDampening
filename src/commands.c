@@ -1,4 +1,4 @@
-it 
+
 #include "stm32f0xx.h"
 #include "ff.h"
 #include "lcd.h"
