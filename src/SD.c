@@ -6,6 +6,45 @@
 #include <stdio.h>
 
 
+int write_header(){
+    const char str[] = "Date/Time,IMU1 X Acceleration,IMU1 Y Acceleration,IMU1 Z Acceleration,"
+    "IMU1 X Rotation,IMU1 Y Rotaion,IMU1 Z Rotation,IMU2 X Acceleration,IMU2 Y Acceleration,"
+    "IMU2 Z Acceleration,IMU2 X Rotation,IMU2 Y Rotaion,IMU2 Z Rotation\n";
+    int chk = input_IMU(str);
+    if (chk) printf("failed to write header");
+}
+int full_data_write(int time, int IMU1_x_Accel, int IMU1_y_Accel, int IMU1_z_Accel,
+    int IMU1_x_Rot, int IMU1_y_Rot, int IMU1_z_Rot,
+    int IMU2_x_Accel, int IMU2_y_Accel, int IMU2_z_Accel, 
+    int IMU2_x_Rot, int IMU2_y_Rot, int IMU2_z_Rot){
+        int chk;
+        char * nl = '/n';
+
+        chk |= input_IMU(time);
+
+        chk |= input_IMU(IMU1_x_Accel);
+        chk |= input_IMU(IMU1_y_Accel);
+        chk |= input_IMU(IMU1_z_Accel);
+
+        chk |= input_IMU(IMU1_x_Rot);
+        chk |= input_IMU(IMU1_y_Rot);
+        chk |= input_IMU(IMU1_z_Rot);
+
+        chk |= input_IMU(IMU2_x_Accel);
+        chk |= input_IMU(IMU2_y_Accel);
+        chk |= input_IMU(IMU2_z_Accel);
+
+        chk |= input_IMU(IMU2_x_Rot);
+        chk |= input_IMU(IMU2_y_Rot);
+        chk |= input_IMU(IMU2_z_Rot);
+
+        chk |= input_IMU(nl);
+
+        if (chk) printf("failed to write somewhere, %d", chk);
+        
+
+    }
+
 
 void init_usart5() {
     //Enable the RCC clocks for GPIOC and GPIOD

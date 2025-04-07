@@ -318,6 +318,28 @@ void input(int argc, char *argv[])
     f_close(&fil);
 }
 
+int input_IMU( char *data ){
+    mount(0, 0);
+    FIL fil;        /* File object */
+    char line[250]; /* Line buffer */
+    FRESULT fr;     /* FatFs return code */
+    fr = f_open(&fil, "0:testing.csv", FA_OPEN_APPEND); //edited to remove the create file section
+    if (fr) {return (1);} //return 1 if failed to open file
+
+    UINT bw; //bytes written
+    fr = f_write(&fil, *data, strlen(data), &bw);
+    if (fr){return(3);}
+    if( bw < strlen(data)){ return (2);}//return error 2 if volume is full
+
+    if (data[0] != '/n'){
+    char *comma = ',';
+    fr = f_write(&fil, comma, 1, &bw);
+    if( bw < 1){ return (2);}//return error 2 if volume is full
+    }
+    f_close(&fil);
+    
+}
+
 void lcd_init(int argc, char *argv[])
 {
     LCD_Setup();
