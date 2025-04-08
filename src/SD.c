@@ -45,6 +45,54 @@ int full_data_write(int time, int IMU1_x_Accel, int IMU1_y_Accel, int IMU1_z_Acc
 
     }
 
+int half_data_write(int time, int IMU_num,int IMU_x_Accel, int IMU_y_Accel, 
+    int IMU_z_Accel, int IMU_x_Rot, int IMU_y_Rot, int IMU_z_Rot){
+        int chk;
+        char * nl = '/n';
+
+        if (IMU_num == 1){
+        
+            chk |= input_IMU(time);
+
+            chk |= input_IMU(IMU_x_Accel);
+            chk |= input_IMU(IMU_y_Accel);
+            chk |= input_IMU(IMU_z_Accel);
+
+            chk |= input_IMU(IMU_x_Rot);
+            chk |= input_IMU(IMU_y_Rot);
+            chk |= input_IMU(IMU_z_Rot);
+
+            chk |= input_IMU(0);
+            chk |= input_IMU(0);
+            chk |= input_IMU(0);
+
+            chk |= input_IMU(0);
+            chk |= input_IMU(0);
+            chk |= input_IMU(0);
+        }
+        else {
+            chk |= input_IMU(time);
+
+            chk |= input_IMU(0);
+            chk |= input_IMU(0);
+            chk |= input_IMU(0);
+
+            chk |= input_IMU(0);
+            chk |= input_IMU(0);
+            chk |= input_IMU(0);
+
+            chk |= input_IMU(IMU_x_Accel);
+            chk |= input_IMU(IMU_y_Accel);
+            chk |= input_IMU(IMU_z_Accel);
+
+            chk |= input_IMU(IMU_x_Rot);
+            chk |= input_IMU(IMU_y_Rot);
+            chk |= input_IMU(IMU_z_Rot);
+        }
+
+        chk |= input_IMU(nl);
+    }
+
 
 void init_usart5() {
     //Enable the RCC clocks for GPIOC and GPIOD
