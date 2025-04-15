@@ -6,14 +6,14 @@
 #include <stdio.h>
 
 
-int write_header(){
+void write_header(){
     const char str[] = "Date/Time,IMU1 X Acceleration,IMU1 Y Acceleration,IMU1 Z Acceleration,"
     "IMU1 X Rotation,IMU1 Y Rotaion,IMU1 Z Rotation,IMU2 X Acceleration,IMU2 Y Acceleration,"
     "IMU2 Z Acceleration,IMU2 X Rotation,IMU2 Y Rotaion,IMU2 Z Rotation\n";
     int chk = input_IMU(str);
     if (chk) printf("failed to write header");
 }
-int full_data_write(int time, int IMU1_x_Accel, int IMU1_y_Accel, int IMU1_z_Accel,
+void full_data_write(int time, int IMU1_x_Accel, int IMU1_y_Accel, int IMU1_z_Accel,
     int IMU1_x_Rot, int IMU1_y_Rot, int IMU1_z_Rot,
     int IMU2_x_Accel, int IMU2_y_Accel, int IMU2_z_Accel, 
     int IMU2_x_Rot, int IMU2_y_Rot, int IMU2_z_Rot){
@@ -45,7 +45,7 @@ int full_data_write(int time, int IMU1_x_Accel, int IMU1_y_Accel, int IMU1_z_Acc
 
     }
 
-int half_data_write(int time, int IMU_num,int IMU_x_Accel, int IMU_y_Accel, 
+void half_data_write(int time, int IMU_num,int IMU_x_Accel, int IMU_y_Accel, 
     int IMU_z_Accel, int IMU_x_Rot, int IMU_y_Rot, int IMU_z_Rot){
         int chk;
         char * nl = '/n';

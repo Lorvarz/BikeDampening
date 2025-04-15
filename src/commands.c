@@ -318,21 +318,32 @@ void input(int argc, char *argv[])
     f_close(&fil);
 }
 
-int input_IMU( char *data ){
-    mount(0, 0);
+int input_IMU(const char * data ){
     FIL fil;        /* File object */
-    char line[250]; /* Line buffer */
+    char line[100]; /* Line buffer */
     FRESULT fr;     /* FatFs return code */
-    fr = f_open(&fil, "0:testing.csv", FA_OPEN_APPEND); //edited to remove the create file section
-    if (fr) {return (1);} //return 1 if failed to open file
+    fr = f_open(&fil, "this.txt", FA_WRITE);
+    if (fr) {
+        // print_error(fr, "thiswillwork.txt");
+        return;
+    }
+
+
+    
+    // data = 1;
+    // FIL fil;        /* File object */
+    // char line[100] = "boomchicakboom"; /* Line buffer */
+    // FRESULT fr;     /* FatFs return code */ //FA_OPEN_APPEND
+    // fr = f_open(&fil, "testing.txt", FA_WRITE|FA_CREATE_NEW); //edited to remove the create file section
+    // if (fr) {return (1);} //return 1 if failed to open file
 
     UINT bw; //bytes written
-    fr = f_write(&fil, *data, strlen(data), &bw);
+    fr = f_write(&fil, data, 100 , &bw);
     if (fr){return(3);}
-    if( bw < strlen(data)){ return (2);}//return error 2 if volume is full
+    if( bw < sizeof(data)){ return (2);}//return error 2 if volume is full
 
-    if (data[0] != '/n'){
-    char *comma = ',';
+    if (data != '\n'){
+    char *comma = ",";
     fr = f_write(&fil, comma, 1, &bw);
     if( bw < 1){ return (2);}//return error 2 if volume is full
     }
@@ -525,6 +536,7 @@ struct commands_t cmds[] = {
         { "date", date },
         { "dino", dino },
         { "input", input },
+        { "input_IMU", input_IMU },
         { "lcd_init", lcd_init },
         { "ls", ls },
         { "mkdir", mkdir },
