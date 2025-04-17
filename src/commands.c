@@ -264,6 +264,7 @@ void date(int argc, char *argv[])
             year, month_name[month], ft.day, ft.hour, ft.minute, ft.bisecond*2);
 }
 
+// I love the dino -Lorenzo
 void dino(int argc, char *argv[])
 {
     const char str[] =

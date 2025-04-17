@@ -201,8 +201,10 @@ void TIM6_DAC_IRQHandler()
 
 bool isConnStable()
 {
-    //TODO: implement check logic once other components are done
-    return true;
+    if (SDStable())
+        return true;
+    
+    return false;
 }
 
 #endif

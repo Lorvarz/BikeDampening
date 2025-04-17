@@ -2,9 +2,13 @@
 #include <stdint.h>
 #include "tty.h"
 #include "fifo.h"
-#include "commands.h"
 #include <stdio.h>
 
+#include "commands.h"
+#include "alarm.h"
+
+bool SD_is_setup = false;
+bool SD_write_error = false;
 
 void write_header(){
     const char str[] = "Date/Time,IMU1 X Acceleration,IMU1 Y Acceleration,IMU1 Z Acceleration,"
@@ -40,9 +44,14 @@ void full_data_write(int time, int IMU1_x_Accel, int IMU1_y_Accel, int IMU1_z_Ac
 
         chk |= input_IMU(nl);
 
-        if (chk) printf("failed to write somewhere, %d", chk);
-        
+        if (chk) 
+        {
+            SD_write_error = true;
+            printf("failed to write somewhere, %d", chk);
+            return;
+        }
 
+        SD_write_error = false;
     }
 
 void half_data_write(int time, int IMU_num,int IMU_x_Accel, int IMU_y_Accel, 
@@ -124,8 +133,8 @@ void init_usart5() {
     USART5->CR1 |= USART_CR1_RE; //enable receive
     USART5->CR1 |= USART_CR1_UE; //enable usart5
 
-
     while (!(USART5->ISR & USART_ISR_TEACK) & !(USART5->ISR & USART_ISR_REACK));
+    SD_is_setup = true;
 }
 
 char interrupt_getchar() {
@@ -249,4 +258,13 @@ void init_lcd_spi(){
 
     init_spi1_slow();
     sdcard_io_high_speed();
+}
+
+// checks if the SD card's connection is stable
+bool SDStable()
+{
+    if (!SD_is_setup) return true;
+    return !SD_write_error &&
+           (!(USART5->ISR & USART_ISR_TEACK) || !(USART5->ISR & USART_ISR_REACK))
+           ;
 }
