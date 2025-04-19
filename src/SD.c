@@ -21,8 +21,8 @@ void full_data_write(char* time, char* IMU1_x_Accel, char* IMU1_y_Accel, char* I
     char* IMU1_x_Rot, char* IMU1_y_Rot, char* IMU1_z_Rot,
     char* IMU2_x_Accel, char* IMU2_y_Accel, char* IMU2_z_Accel, 
     char* IMU2_x_Rot, char* IMU2_y_Rot, char* IMU2_z_Rot){
-        int chk;
-        char* nl = '/n';
+        int chk = 0;
+        char* nl = "/n";
 
         chk |= input_IMU(time);
 
@@ -56,11 +56,11 @@ void full_data_write(char* time, char* IMU1_x_Accel, char* IMU1_y_Accel, char* I
 
 void half_data_write(char* time, char* IMU_num,char* IMU_x_Accel, char* IMU_y_Accel, 
     char* IMU_z_Accel, char* IMU_x_Rot, char* IMU_y_Rot, char* IMU_z_Rot){
-        int chk;
-        char* nl = '/n';
+        int chk = 0;
+        char* nl = "/n";
         char* zero = "0";
 
-        if (IMU_num == 1){
+        if (IMU_num[0] == '1'){
         
             chk |= input_IMU(time);
 
