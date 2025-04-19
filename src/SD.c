@@ -17,12 +17,12 @@ void write_header(){
     int chk = input_IMU(str);
     if (chk) printf("failed to write header");
 }
-void full_data_write(int time, int IMU1_x_Accel, int IMU1_y_Accel, int IMU1_z_Accel,
-    int IMU1_x_Rot, int IMU1_y_Rot, int IMU1_z_Rot,
-    int IMU2_x_Accel, int IMU2_y_Accel, int IMU2_z_Accel, 
-    int IMU2_x_Rot, int IMU2_y_Rot, int IMU2_z_Rot){
+void full_data_write(char* time, char* IMU1_x_Accel, char* IMU1_y_Accel, char* IMU1_z_Accel,
+    char* IMU1_x_Rot, char* IMU1_y_Rot, char* IMU1_z_Rot,
+    char* IMU2_x_Accel, char* IMU2_y_Accel, char* IMU2_z_Accel, 
+    char* IMU2_x_Rot, char* IMU2_y_Rot, char* IMU2_z_Rot){
         int chk;
-        char * nl = '/n';
+        char* nl = '/n';
 
         chk |= input_IMU(time);
 
@@ -54,10 +54,11 @@ void full_data_write(int time, int IMU1_x_Accel, int IMU1_y_Accel, int IMU1_z_Ac
         SD_write_error = false;
     }
 
-void half_data_write(int time, int IMU_num,int IMU_x_Accel, int IMU_y_Accel, 
-    int IMU_z_Accel, int IMU_x_Rot, int IMU_y_Rot, int IMU_z_Rot){
+void half_data_write(char* time, char* IMU_num,char* IMU_x_Accel, char* IMU_y_Accel, 
+    char* IMU_z_Accel, char* IMU_x_Rot, char* IMU_y_Rot, char* IMU_z_Rot){
         int chk;
-        char * nl = '/n';
+        char* nl = '/n';
+        char* zero = "0";
 
         if (IMU_num == 1){
         
@@ -71,24 +72,24 @@ void half_data_write(int time, int IMU_num,int IMU_x_Accel, int IMU_y_Accel,
             chk |= input_IMU(IMU_y_Rot);
             chk |= input_IMU(IMU_z_Rot);
 
-            chk |= input_IMU(0);
-            chk |= input_IMU(0);
-            chk |= input_IMU(0);
+            chk |= input_IMU(zero);
+            chk |= input_IMU(zero);
+            chk |= input_IMU(zero);
 
-            chk |= input_IMU(0);
-            chk |= input_IMU(0);
-            chk |= input_IMU(0);
+            chk |= input_IMU(zero);
+            chk |= input_IMU(zero);
+            chk |= input_IMU(zero);
         }
         else {
             chk |= input_IMU(time);
 
-            chk |= input_IMU(0);
-            chk |= input_IMU(0);
-            chk |= input_IMU(0);
+            chk |= input_IMU(zero);
+            chk |= input_IMU(zero);
+            chk |= input_IMU(zero);
 
-            chk |= input_IMU(0);
-            chk |= input_IMU(0);
-            chk |= input_IMU(0);
+            chk |= input_IMU(zero);
+            chk |= input_IMU(zero);
+            chk |= input_IMU(zero);
 
             chk |= input_IMU(IMU_x_Accel);
             chk |= input_IMU(IMU_y_Accel);

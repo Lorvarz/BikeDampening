@@ -321,7 +321,7 @@ void input(int argc, char *argv[])
 
 int input_IMU(const char * data ){
     FIL fil;        /* File object */
-    char line[100]; /* Line buffer */
+    char line[250]; /* Line buffer */
     FRESULT fr;     /* FatFs return code */
     fr = f_open(&fil, "this.txt", FA_WRITE);
     if (fr) {
@@ -339,7 +339,7 @@ int input_IMU(const char * data ){
     // if (fr) {return (1);} //return 1 if failed to open file
 
     UINT bw; //bytes written
-    fr = f_write(&fil, data, 100 , &bw);
+    fr = f_write(&fil, data, 250 , &bw);
     if (fr){return(3);}
     if( bw < sizeof(data)){ return (2);}//return error 2 if volume is full
 
