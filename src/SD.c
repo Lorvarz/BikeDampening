@@ -12,8 +12,8 @@ bool SD_write_error = false;
 
 void write_header(){
     const char str[] = "Date/Time,IMU1 X Acceleration,IMU1 Y Acceleration,IMU1 Z Acceleration,"
-    "IMU1 X Rotation,IMU1 Y Rotaion,IMU1 Z Rotation,IMU2 X Acceleration,IMU2 Y Acceleration,"
-    "IMU2 Z Acceleration,IMU2 X Rotation,IMU2 Y Rotaion,IMU2 Z Rotation\n";
+    "IMU1 X Rotation,IMU1 Y Rotation,IMU1 Z Rotation,IMU2 X Acceleration,IMU2 Y Acceleration,"
+    "IMU2 Z Acceleration,IMU2 X Rotation,IMU2 Y Rotation,IMU2 Z Rotation\n";
     int chk = input_IMU(str);
     if (chk) printf("failed to write header");
 }
@@ -42,7 +42,7 @@ void full_data_write(char* time, char* IMU1_x_Accel, char* IMU1_y_Accel, char* I
         chk |= input_IMU(IMU2_y_Rot);
         chk |= input_IMU(IMU2_z_Rot);
 
-        chk |= input_IMU(nl);
+        // chk |= input_IMU(nl);
 
         if (chk) 
         {
@@ -100,7 +100,7 @@ void half_data_write(char* time, char* IMU_num,char* IMU_x_Accel, char* IMU_y_Ac
             chk |= input_IMU(IMU_z_Rot);
         }
 
-        chk |= input_IMU(nl);
+        // chk |= input_IMU(nl);
     }
 
 

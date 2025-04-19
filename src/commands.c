@@ -323,10 +323,10 @@ int input_IMU(const char * data ){
     FIL fil;        /* File object */
     char line[250]; /* Line buffer */
     FRESULT fr;     /* FatFs return code */
-    fr = f_open(&fil, "this.txt", FA_WRITE);
+    fr = f_open(&fil, "this.txt", FA_WRITE|FA_OPEN_EXISTING|FA_OPEN_APPEND); //works with FA_WRITE
     if (fr) {
         // print_error(fr, "thiswillwork.txt");
-        return;
+        return (1);
     }
 
 
