@@ -319,16 +319,16 @@ void input(int argc, char *argv[])
     f_close(&fil);
 }
 
-int input_IMU(const char * data ){
+int input_IMU(const char * data){
     FIL fil;        /* File object */
-    char line[250]; /* Line buffer */
+    char line[227]; /* Line buffer */ /////was 250  //not used
     FRESULT fr;     /* FatFs return code */
-    fr = f_open(&fil, "this.txt", FA_WRITE|FA_OPEN_EXISTING|FA_OPEN_APPEND); //works with FA_WRITE
+    fr = f_open(&fil, "test.txt", FA_WRITE|FA_OPEN_EXISTING|FA_OPEN_APPEND); //works with FA_WRITE
     if (fr) {
         // print_error(fr, "thiswillwork.txt");
         return (1);
     }
-
+    int d_len = strlen(data);
 
     
     // data = 1;
@@ -339,7 +339,7 @@ int input_IMU(const char * data ){
     // if (fr) {return (1);} //return 1 if failed to open file
 
     UINT bw; //bytes written
-    fr = f_write(&fil, data, 250 , &bw);
+    fr = f_write(&fil, data, d_len, &bw); //data length + \n + extra //was d_len + 2
     if (fr){return(3);}
     if( bw < sizeof(data)){ return (2);}//return error 2 if volume is full
 

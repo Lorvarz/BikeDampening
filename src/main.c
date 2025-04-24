@@ -2,8 +2,8 @@
 
 // #define active //Main
 // #define testSD_1 // Header itself
-// #define testSD_2 // Header + Header (test Append)
-#define testSD_3 // Hard coded number 
+#define testSD_2 // Header + Header (test Append)
+// #define testSD_3 // Hard coded number 
 // #define testSD_4 // multi number data writes
 // #define testSD_5 // Header plus number data writes
 // #define testSD_6 // Header + variable data writes
@@ -65,15 +65,14 @@ int main() {
     if (res != FR_OK){
         print_error(res, "Error occurred while mounting");
     }
-    write_header();
-    write_header();
-    write_header();
+    write_header2();
+    write_header2();
+    write_header2();
     // full_data_write(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
     // half_data_write(0, 1, 1, 2, 3, 4, 5, 6);
     command_shell();
 }
 #endif
-
 
 #ifdef testSD_3
 #include <stdio.h>
@@ -91,14 +90,21 @@ int main() {
     FATFS fstorage;
     FATFS* fs = &fstorage;
 
+    //Mounting cmds
     FRESULT res = f_mount(NULL, "", 1); // make sure unmounted
-    res = f_mount(fs, "", 1);
+    res = f_mount(fs, "", 1); //mount
     if (res != FR_OK){
         print_error(res, "Error occurred while mounting");
     }
+
+    //RM previous test file
+    res = f_unlink("test.txt");
+        if (res != FR_OK)
+            print_error(res, "this.txt");
+
     // write_header();
     // write_header();
-    char* input = "9blue2";
+    char* input = "200021220121\n";
     input_IMU(input);
     // full_data_write(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
     // half_data_write(0, 1, 1, 2, 3, 4, 5, 6);
