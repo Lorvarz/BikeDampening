@@ -1,21 +1,6 @@
 //File should contain all the different testing def below active main
 
-// #define active //Main
-// #define testSD_1 // Header itself
-// #define testSD_2 // Header + Header (test Append)
-// #define testSD_3 // Hard coded number 
-#define testSD_4 // Header + multi number data writes
-// #define testSD_5 // 
-// #define testSD_6 // Header + variable data writes
-#if defined(testSD_1) || defined(testSD_2) || defined(testSD_3) || defined(testSD_4) || defined(testSD_5) || defined(testSD_6)
-
-#include <stdio.h>
-#include "stm32f0xx.h"
-#include "commands.h"
-#include "SD.h"
-#include "ff.h"
-
-#endif
+#define active //Main
 
 #ifdef active
 #include <stdio.h>
@@ -25,6 +10,59 @@ int main() {
     internal_clock();
 }
 #endif
+
+
+
+
+
+
+//Hard coded SD tests
+// #define testSD   // command shell to validate
+// #define testSD_1 // Header itself
+// #define testSD_2 // Header + Header (test Append)
+// #define testSD_3 // Hard coded number 
+// #define testSD_4 // Header + multi number data writes
+
+//Variable SD tests
+// #define testSD_5 // Header + variable data writes for infinity
+// #define testSD_6 // csv data type with rand data writes for infinity
+
+#if defined(testSD) || defined(testSD_1) || defined(testSD_2) || defined(testSD_3) || defined(testSD_4) || defined(testSD_5) || defined(testSD_6)
+
+#include <stdio.h>
+#include "stm32f0xx.h"
+#include "commands.h"
+#include "SD.h"
+#include "ff.h"
+
+#endif
+
+
+#ifdef testSD
+int main() {
+    internal_clock();
+    init_usart5();
+    enable_tty_interrupt();
+    setbuf(stdin,0);
+    setbuf(stdout,0);
+    setbuf(stderr,0);
+
+        
+    FATFS fstorage;
+    FATFS* fs = &fstorage;
+
+    //Mounting cmds
+    FRESULT res = f_mount(NULL, "", 1); // make sure unmounted
+    res = f_mount(fs, "", 1); //mount
+    if (res != FR_OK){
+        print_error(res, "Error occurred while mounting");
+    }
+
+
+    command_shell();
+}
+#endif
+
 
 #ifdef testSD_1
 
@@ -185,6 +223,173 @@ int main() {
         IMU1_x_Accel, IMU1_y_Accel,           //Acceleration prints
         IMU1_z_Accel, IMU1_x_Rot, IMU1_y_Rot, IMU1_z_Rot);  //Rotation prints     
     test_cat("test.txt");
+    command_shell();
+}
+#endif
+
+#ifdef testSD_5
+#include "time.h"
+char* num_gen(int length){
+    if (length <= 0) {
+        return NULL;
+    }
+
+    char* str = (char*)malloc((length + 1) * sizeof(char));
+    if (str == NULL) {
+        return NULL;
+    }
+
+    
+
+    for (int i = 0; i < length; i++) {
+        srand(time(0));
+        str[i] = (rand() * rand()) % 10 + '0';
+    }
+    str[length] = '\0';
+
+    return str;
+}
+int main() {
+    internal_clock();
+    init_usart5();
+    enable_tty_interrupt();
+    setbuf(stdin,0);
+    setbuf(stdout,0);
+    setbuf(stderr,0);
+    
+    FATFS fstorage;
+    FATFS* fs = &fstorage;
+
+    //Mounting cmds
+    FRESULT res = f_mount(NULL, "", 1); // make sure unmounted
+    res = f_mount(fs, "", 1); //mount
+    if (res != FR_OK){
+        print_error(res, "Error occurred while mounting");
+    }
+
+    //RM previous test file
+    res = f_unlink("test.txt");
+        if (res != FR_OK)
+            print_error(res, "this.txt");
+
+    //below is rand gen
+    //printf(time(NULL));
+    write_header("test.txt");
+    for (;;){ //change back to int i=0; i < 3; i++ for non-infinity
+    char* time = num_gen(4);
+    char* IMU1_x_Accel = num_gen(5);
+    char* IMU1_y_Accel = num_gen(5);
+    char* IMU1_z_Accel = num_gen(5);
+    char* IMU1_x_Rot = num_gen(5);
+    char* IMU1_y_Rot = num_gen(5);
+    char* IMU1_z_Rot = num_gen(5);
+    char* IMU2_x_Accel = num_gen(5);
+    char* IMU2_y_Accel = num_gen(5);
+    char* IMU2_z_Accel = num_gen(5);
+    char* IMU2_x_Rot = num_gen(5);
+    char* IMU2_y_Rot = num_gen(5);
+    char* IMU2_z_Rot = num_gen(5);
+
+   
+    full_data_write("test.txt", time,                       //IMU 1+2 prints
+        IMU1_x_Accel, IMU1_y_Accel, IMU1_z_Accel,           //IMU 1 Acceleration prints
+        IMU1_x_Rot, IMU1_y_Rot, IMU1_z_Rot,                 //IMU 1 Rotation prints
+        IMU2_x_Accel, IMU2_y_Accel, IMU2_z_Accel,           //IMU 2 Acceleration prints
+        IMU2_x_Rot, IMU2_y_Rot, IMU2_z_Rot);                //IMU 2 Rotation prints
+
+    char* IMU_num = "1";
+    half_data_write("test.txt", time, IMU_num,              //IMU 1 Prints
+        IMU1_x_Accel, IMU1_y_Accel,           //Acceleration prints
+        IMU1_z_Accel, IMU1_x_Rot, IMU1_y_Rot, IMU1_z_Rot);  //Rotation prints
+    IMU_num = "2";
+    half_data_write("test.txt", time, IMU_num,              //IMU 2 prints
+        IMU1_x_Accel, IMU1_y_Accel,           //Acceleration prints
+        IMU1_z_Accel, IMU1_x_Rot, IMU1_y_Rot, IMU1_z_Rot);  //Rotation prints     
+    }
+    test_cat("test.txt");
     // command_shell();
+}
+#endif
+
+#ifdef testSD_6
+#include "time.h"
+char* num_gen(int length){
+    if (length <= 0) {
+        return NULL;
+    }
+
+    char* str = (char*)malloc((length + 1) * sizeof(char));
+    if (str == NULL) {
+        return NULL;
+    }
+
+    
+
+    for (int i = 0; i < length; i++) {
+        srand(time(0));
+        str[i] = (rand() * rand()) % 10 + '0';
+    }
+    str[length] = '\0';
+
+    return str;
+}
+int main() {
+    internal_clock();
+    init_usart5();
+    enable_tty_interrupt();
+    setbuf(stdin,0);
+    setbuf(stdout,0);
+    setbuf(stderr,0);
+
+    FATFS fstorage;
+    FATFS* fs = &fstorage;
+
+    //Mounting cmds
+    FRESULT res = f_mount(NULL, "", 1); // make sure unmounted
+    res = f_mount(fs, "", 1); //mount
+    if (res != FR_OK){
+        print_error(res, "Error occurred while mounting");
+    }
+
+    //RM previous test file
+    res = f_unlink("test.csv");
+        if (res != FR_OK)
+            print_error(res, "this.csv");
+
+    //below is rand gen
+    //printf(time(NULL));
+    write_header("test.csv");
+    for (;;){ //change back to int i=0; i < 3; i++ for non-infinity
+    char* time = num_gen(4);
+    char* IMU1_x_Accel = num_gen(5);
+    char* IMU1_y_Accel = num_gen(5);
+    char* IMU1_z_Accel = num_gen(5);
+    char* IMU1_x_Rot = num_gen(5);
+    char* IMU1_y_Rot = num_gen(5);
+    char* IMU1_z_Rot = num_gen(5);
+    char* IMU2_x_Accel = num_gen(5);
+    char* IMU2_y_Accel = num_gen(5);
+    char* IMU2_z_Accel = num_gen(5);
+    char* IMU2_x_Rot = num_gen(5);
+    char* IMU2_y_Rot = num_gen(5);
+    char* IMU2_z_Rot = num_gen(5);
+
+
+    full_data_write("test.csv", time,                       //IMU 1+2 prints
+        IMU1_x_Accel, IMU1_y_Accel, IMU1_z_Accel,           //IMU 1 Acceleration prints
+        IMU1_x_Rot, IMU1_y_Rot, IMU1_z_Rot,                 //IMU 1 Rotation prints
+        IMU2_x_Accel, IMU2_y_Accel, IMU2_z_Accel,           //IMU 2 Acceleration prints
+        IMU2_x_Rot, IMU2_y_Rot, IMU2_z_Rot);                //IMU 2 Rotation prints
+
+    char* IMU_num = "1";
+    half_data_write("test.csv", time, IMU_num,              //IMU 1 Prints
+        IMU1_x_Accel, IMU1_y_Accel,           //Acceleration prints
+        IMU1_z_Accel, IMU1_x_Rot, IMU1_y_Rot, IMU1_z_Rot);  //Rotation prints
+    IMU_num = "2";
+    half_data_write("test.csv", time, IMU_num,              //IMU 2 prints
+        IMU1_x_Accel, IMU1_y_Accel,           //Acceleration prints
+        IMU1_z_Accel, IMU1_x_Rot, IMU1_y_Rot, IMU1_z_Rot);  //Rotation prints     
+    }
+    test_cat("test.csv");
 }
 #endif
