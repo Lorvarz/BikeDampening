@@ -270,11 +270,11 @@ void mpu6050_init(uint8_t addr)
 
     if (i2c_senddata(addr, config, 2) < 0)
     {
-        printf("Failed to wake MPU @ 0x%02x\n", addr);
+        //printf("Failed to wake MPU @ 0x%02x\n", addr);
     }
     else
     {
-        printf("MPU @ 0x%02x\n", addr);
+        //printf("MPU @ 0x%02x\n", addr);
     }
 }
 
