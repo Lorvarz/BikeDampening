@@ -5,9 +5,22 @@
 #ifdef active
 #include <stdio.h>
 #include "stm32f0xx.h"
+// #include "ff.h"
 
 int main() {
     internal_clock();
+    enable_tty_interrupt();
+    set_sd_stream();
+    
+    char* fn = "test.csv";
+    SD_setup(fn); //mount and remove previous file by name fn
+    setupDAC();
+    setupTIM6();
+    write_header(fn);
+
+    for (;;){
+        __WFI();
+    }
 }
 #endif
 

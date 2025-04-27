@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "mpu_i2c.h"
+#include "ff.h"
 
 #include "commands.h"
 #include "alarm.h"
@@ -363,4 +364,21 @@ void TIM2_IRQHandler(void)
         IMU2_x_Accel, IMU2_y_Accel, IMU2_z_Accel,           //IMU 2 Acceleration prints
         IMU2_x_Rot, IMU2_y_Rot, IMU2_z_Rot);                //IMU 2 Rotation prints                
     }
+}
+
+void SD_setup(char* fn){
+    FATFS fstorage;
+    FATFS* fs = &fstorage;
+
+    //Mounting cmds
+    FRESULT res = f_mount(NULL, "", 1); // make sure unmounted
+    res = f_mount(fs, "", 1); //mount
+    if (res != FR_OK){
+        print_error(res, "Error occurred while mounting");
+    }
+
+    //RM previous test file
+    res = f_unlink(fn);
+        if (res != FR_OK)
+            print_error(res, fn);
 }

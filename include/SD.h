@@ -45,4 +45,6 @@ int imu_val_update(int raw);
 char* int_to_str(int read);
 
 void set_sd_stream();
+
+void SD_setup(char* fn);
 #endif
