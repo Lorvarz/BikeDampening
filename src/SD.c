@@ -317,3 +317,12 @@ static void TIM2_50ms_Init(void)
     NVIC_SetPriority(TIM2_IRQn, 1);
     NVIC_EnableIRQ(TIM2_IRQn);
 }
+
+void TIM2_IRQHandler(void)
+{
+    if (TIM2->SR & TIM_SR_UIF)          // check update flag set?          
+    {
+        TIM2->SR &= ~TIM_SR_UIF;        // clear it (write 0)
+        write_to_sd();                  // begin the functions to                
+    }
+}

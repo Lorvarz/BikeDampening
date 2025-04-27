@@ -297,6 +297,14 @@ void mpu6050_init(uint8_t addr)
         printf("MPU @ 0x%02x\n", addr);
     }
 }
+void setup_imu(){
+    enable_ports();
+    init_i2c();
+    mpu6050_init(0x68);
+    mpu6050_init(0x69);
+    enable_tty_interrupt();
+    
+}
 int main()
 {
     internal_clock();
@@ -318,9 +326,9 @@ int main()
     nano_wait(1000);
     mpu_readwhoami(0x69);
     // These turn off buffering.
-    setbuf(stdin, 0);
-    setbuf(stdout, 0);
-    setbuf(stderr, 0);
+    //setbuf(stdin, 0);
+    //setbuf(stdout, 0);
+    //setbuf(stderr, 0);
 
     AccelData wheel, fork;
 
