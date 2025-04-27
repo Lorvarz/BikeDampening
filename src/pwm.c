@@ -81,19 +81,31 @@ void take_button_input()
 
     static int prev_state = 0;
 
-    while (1) {
-        int curr_state = (GPIOC->IDR & (1 << 5)) ? 1 : 0;
+    // Configure EXTI line 5 for PC5
+    SYSCFG->EXTICR[1] &= ~(0xF << 4); // Clear EXTI5 bits
+    SYSCFG->EXTICR[1] |= (0x2 << 4);  // Set EXTI5 to port C
 
-        if (curr_state && !prev_state) {
-            // Button pressed (rising edge)
-            if (toggle) {
-                set_compression_damp(0);
-            } else {
-                set_compression_damp(90);
-            }
-            toggle = !toggle;
+    EXTI->IMR |= (1 << 5);   // Unmask interrupt
+    EXTI->FTSR |= (1 << 5);  // Trigger on falling edge (button press)
+
+    NVIC_EnableIRQ(EXTI4_15_IRQn); // Enable EXTI4_15 interrupt in NVIC
+}
+
+// Interrupt handler for EXTI line 5 (PC5)
+void EXTI4_15_IRQHandler(void) {
+    static int toggle = 0;
+
+    // Check if EXTI line 5 triggered the interrupt
+    if (EXTI->PR & (1 << 5)) {
+        // Clear the pending interrupt flag
+        EXTI->PR |= (1 << 5);
+
+        // Toggle compression damper between 0 and 90 degrees
+        if (toggle) {
+            set_compression_damp(0);
+        } else {
+            set_compression_damp(90);
         }
-
-        prev_state = curr_state;
+        toggle = !toggle;
     }
 }
