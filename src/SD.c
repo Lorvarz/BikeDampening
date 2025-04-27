@@ -3,6 +3,7 @@
 #include "tty.h"
 #include "fifo.h"
 #include <stdio.h>
+#include <math.h>
 
 #include "commands.h"
 #include "alarm.h"
@@ -271,4 +272,48 @@ _Bool SDStable()
     return !SD_write_error &&
            (!(USART5->ISR & USART_ISR_TEACK) || !(USART5->ISR & USART_ISR_REACK))
            ;
+}
+
+int imu_val_update(int raw){
+   int bit_const = 16384; // 2^15/2 or 2^14
+   int grav_const = 9.80655; // m/s^2
+   int div = bit_const * grav_const;
+   return (round(raw / div));
+
+}
+
+char* int_to_str(int read){
+    int dig_len = log10(read);
+    char* str = malloc(dig_len * sizeof(char) + 1);
+    for( int i = dig_len; i < 0; i--){
+        int temp = (read / (i - 1)) % 10;
+        str[dig_len - i] = temp - '0';
+    }
+    str[dig_len] = '\0';
+    return (str);
+}
+
+void set_sd_stream(){
+    setbuf(stdin,0);
+    setbuf(stdout,0);
+    setbuf(stderr,0);
+}
+static void TIM2_50ms_Init(void)
+{
+    // Enable peripheral clock
+    RCC->APB1ENR |= RCC_APB1ENR_TIM2EN;
+
+    // Timing (psc arr and cnt)
+    TIM2->PSC = (uint16_t)(SystemCoreClock / 1000U - 1U); //PSC = (48 000 000 / 1 000) – 1 = 47 999
+    TIM2->ARR = 50U - 1U;                                 /* period     */
+    TIM2->CNT = 0;                                        /* reset CNT  */
+
+    
+    TIM2->DIER |= TIM_DIER_UIE; //Enable update interrupt
+
+    TIM2->CR1  |= TIM_CR1_CEN; //start counter
+
+    // NVIC setup
+    NVIC_SetPriority(TIM2_IRQn, 1);
+    NVIC_EnableIRQ(TIM2_IRQn);
 }

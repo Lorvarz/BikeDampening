@@ -43,9 +43,7 @@ int main() {
     internal_clock();
     init_usart5();
     enable_tty_interrupt();
-    setbuf(stdin,0);
-    setbuf(stdout,0);
-    setbuf(stderr,0);
+    set_sd_stream();
 
         
     FATFS fstorage;
@@ -71,9 +69,7 @@ int main() {
     internal_clock();
     init_usart5();
     enable_tty_interrupt();
-    setbuf(stdin,0);
-    setbuf(stdout,0);
-    setbuf(stderr,0);
+    set_sd_stream(0;)
     
     FATFS fstorage;
     FATFS* fs = &fstorage;
@@ -97,9 +93,7 @@ int main() {
     internal_clock();
     init_usart5();
     enable_tty_interrupt();
-    setbuf(stdin,0);
-    setbuf(stdout,0);
-    setbuf(stderr,0);
+    set_sd_stream();
     
     FATFS fstorage;
     FATFS* fs = &fstorage;
@@ -135,9 +129,7 @@ int main() {
     internal_clock();
     init_usart5();
     enable_tty_interrupt();
-    setbuf(stdin,0);
-    setbuf(stdout,0);
-    setbuf(stderr,0);
+    set_sd_stream();
     
     FATFS fstorage;
     FATFS* fs = &fstorage;
@@ -173,9 +165,7 @@ int main() {
     internal_clock();
     init_usart5();
     enable_tty_interrupt();
-    setbuf(stdin,0);
-    setbuf(stdout,0);
-    setbuf(stderr,0);
+    set_sd_stream();
     
     FATFS fstorage;
     FATFS* fs = &fstorage;
@@ -253,9 +243,7 @@ int main() {
     internal_clock();
     init_usart5();
     enable_tty_interrupt();
-    setbuf(stdin,0);
-    setbuf(stdout,0);
-    setbuf(stderr,0);
+    set_sd_stream();
     
     FATFS fstorage;
     FATFS* fs = &fstorage;
@@ -337,9 +325,7 @@ int main() {
     internal_clock();
     init_usart5();
     enable_tty_interrupt();
-    setbuf(stdin,0);
-    setbuf(stdout,0);
-    setbuf(stderr,0);
+    set_sd_stream();
 
     FATFS fstorage;
     FATFS* fs = &fstorage;

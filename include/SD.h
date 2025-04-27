@@ -39,4 +39,10 @@ void sdcard_io_high_speed();
 void init_lcd_spi();
 
 _Bool SDStable();
+
+int imu_val_update(int raw);
+
+char* int_to_str(int read);
+
+void set_sd_stream();
 #endif
