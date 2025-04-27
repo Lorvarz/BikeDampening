@@ -106,6 +106,15 @@ void half_data_write(const char * path, char* time, char* IMU_num,char* IMU_x_Ac
             chk |= input_IMU(IMU_z_Rot, path, 1);
         }
 
+        if (chk) 
+        {
+            SD_write_error = true;
+            printf("failed to write somewhere, %d", chk);
+            return;
+        }
+
+        SD_write_error = false;
+
     }
 
 
@@ -267,11 +276,10 @@ void init_lcd_spi(){
 }
 
 // checks if the SD card's connection is stable
-_Bool SDStable()
+bool inline SDStable()
 {
-    if (!SD_is_setup) return true;
-    return !SD_write_error &&
-           (!(USART5->ISR & USART_ISR_TEACK) || !(USART5->ISR & USART_ISR_REACK))
+    return !SD_is_setup || 
+            (!SD_write_error && (!(USART5->ISR & USART_ISR_TEACK) || !(USART5->ISR & USART_ISR_REACK)))
            ;
 }
 

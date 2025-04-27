@@ -3,6 +3,7 @@
         "stm32f0xx.h": "c",
         "stdio.h": "c",
         "commands.h": "c",
-        "ff.h": "c"
+        "ff.h": "c",
+        "fifo.h": "c"
     }
 }
