@@ -266,12 +266,12 @@ int mpu_read_accel(uint8_t addr, AccelData *accel)
     uint8_t raw[6];
 
     if (i2c_senddata(addr, &reg, 1) < 0) {
-        printf("MPU @ 0x%02X write failed\n", addr);
+        //printf("MPU @ 0x%02X write failed\n", addr);
         return -1;
     }
 
     if (i2c_recvdata(addr, raw, 6) < 0) {
-        printf("MPU @ 0x%02X read failed\n", addr);
+        //printf("MPU @ 0x%02X read failed\n", addr);
         return -1;
     }
 
@@ -290,11 +290,11 @@ void mpu6050_init(uint8_t addr)
 
     if (i2c_senddata(addr, config, 2) < 0)
     {
-        printf("Failed to wake MPU @ 0x%02x\n", addr);
+        //printf("Failed to wake MPU @ 0x%02x\n", addr);
     }
     else
     {
-        printf("MPU @ 0x%02x\n", addr);
+        //printf("MPU @ 0x%02x\n", addr);
     }
 }
 void setup_imu(){
@@ -321,16 +321,17 @@ int main()
     mpu6050_init(0x68);
     mpu6050_init(0x69);
     enable_tty_interrupt();
-    printf("Reading WHO_AM_I from MPU...\n");
+    /*printf("Reading WHO_AM_I from MPU...\n");
     mpu_readwhoami(0x68);
     nano_wait(1000);
     mpu_readwhoami(0x69);
+    */
     // These turn off buffering.
     //setbuf(stdin, 0);
     //setbuf(stdout, 0);
     //setbuf(stderr, 0);
 
-    AccelData wheel, fork;
+    /*AccelData wheel, fork;
 
     while (1)
     {
@@ -347,6 +348,6 @@ int main()
         nano_wait(5000000); // Wait 5ms between reads (tune as needed)
     }
 
-    while(1);
+    */while(1);
  
 }
