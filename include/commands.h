@@ -7,6 +7,7 @@ struct commands_t {
 };
 
 void command_shell(void);
-int input_IMU( const char * data );
+int input_IMU(const char * data, const char * path, int nl);
+void test_cat(const char * path);
 
 #endif /* __COMMANDS_H_ */

@@ -187,6 +187,8 @@ void cat(int argc, char *argv[])
     }
 }
 
+
+
 void cd(int argc, char *argv[])
 {
     if (argc > 2) {
@@ -319,16 +321,16 @@ void input(int argc, char *argv[])
     f_close(&fil);
 }
 
-int input_IMU(const char * data ){
+int input_IMU(const char * data, const char * path, int nl){
     FIL fil;        /* File object */
-    char line[250]; /* Line buffer */
+    //char line[227]; /* Line buffer */ /////was 250  //not used
     FRESULT fr;     /* FatFs return code */
-    fr = f_open(&fil, "this.txt", FA_WRITE|FA_OPEN_EXISTING|FA_OPEN_APPEND); //works with FA_WRITE
+    fr = f_open(&fil, path, FA_WRITE|FA_OPEN_EXISTING|FA_OPEN_APPEND); //works with FA_WRITE
     if (fr) {
         // print_error(fr, "thiswillwork.txt");
         return (1);
     }
-
+    int d_len = strlen(data);
 
     
     // data = 1;
@@ -339,17 +341,43 @@ int input_IMU(const char * data ){
     // if (fr) {return (1);} //return 1 if failed to open file
 
     UINT bw; //bytes written
-    fr = f_write(&fil, data, 250 , &bw);
+    fr = f_write(&fil, data, d_len, &bw); //data length + \n + extra //was d_len + 2
     if (fr){return(3);}
-    if( bw < sizeof(data)){ return (2);}//return error 2 if volume is full
-
-    if (data != '\n'){
-    char *comma = ",";
-    fr = f_write(&fil, comma, 1, &bw);
-    if( bw < 1){ return (2);}//return error 2 if volume is full
+    // printf("%d\n", bw);
+    if( bw < d_len){ return (2);}//return error 2 if volume is full
+    if(!nl){
+        if (data[d_len -1] != '\n'){
+        char *comma = ",";
+        fr = f_write(&fil, comma, 1, &bw);
+        if( bw < 1){ return (2);}//return error 2 if volume is full
+        }
+    }
+    else{
+        char *nl = "\n";
+        fr = f_write(&fil, nl, 1, &bw);
+        if( bw < 1){ return (2);}//return error 2 if volume is full
     }
     f_close(&fil);
     
+}
+
+void test_cat(const char * path){
+    FIL fil;        /* File object */
+    char line[250]; /* Line buffer */
+    FRESULT fr;     /* FatFs return code */
+
+    /* Open a text file */
+    fr = f_open(&fil, path, FA_READ);
+    if (fr) {
+        print_error(fr, path);
+        return;
+    }
+
+    /* Read every line and display it */
+    while(f_gets(line, sizeof line, &fil))
+        printf(line);
+    /* Close the file */
+    f_close(&fil);
 }
 
 void lcd_init(int argc, char *argv[])

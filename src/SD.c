@@ -3,6 +3,7 @@
 #include "tty.h"
 #include "fifo.h"
 #include <stdio.h>
+#include <math.h>
 
 #include "commands.h"
 #include "alarm.h"
@@ -10,39 +11,44 @@
 bool SD_is_setup = false;
 bool SD_write_error = false;
 
-void write_header(){
+void write_header(const char * path){
     const char str[] = "Date/Time,IMU1 X Acceleration,IMU1 Y Acceleration,IMU1 Z Acceleration,"
     "IMU1 X Rotation,IMU1 Y Rotation,IMU1 Z Rotation,IMU2 X Acceleration,IMU2 Y Acceleration,"
-    "IMU2 Z Acceleration,IMU2 X Rotation,IMU2 Y Rotation,IMU2 Z Rotation\n";
-    int chk = input_IMU(str);
+    "IMU2 Z Acceleration,IMU2 X Rotation,IMU2 Y Rotation,IMU2 Z Rotation";
+    // const char str[] = "hellooooo\n";
+    int chk = input_IMU(str, path, 1);
     if (chk) printf("failed to write header");
 }
-void full_data_write(char* time, char* IMU1_x_Accel, char* IMU1_y_Accel, char* IMU1_z_Accel,
+void write_header2(const char * path){
+    const char str[] = "hi";
+    
+    int chk = input_IMU(str, path, 1);
+    if (chk) printf("failed to write header");
+}
+void full_data_write(const char * path, char* time, char* IMU1_x_Accel, char* IMU1_y_Accel, char* IMU1_z_Accel,
     char* IMU1_x_Rot, char* IMU1_y_Rot, char* IMU1_z_Rot,
     char* IMU2_x_Accel, char* IMU2_y_Accel, char* IMU2_z_Accel, 
     char* IMU2_x_Rot, char* IMU2_y_Rot, char* IMU2_z_Rot){
         int chk = 0;
-        char* nl = "/n";
 
-        chk |= input_IMU(time);
+        chk |= input_IMU(time, path, 0);
 
-        chk |= input_IMU(IMU1_x_Accel);
-        chk |= input_IMU(IMU1_y_Accel);
-        chk |= input_IMU(IMU1_z_Accel);
+        chk |= input_IMU(IMU1_x_Accel, path, 0);
+        chk |= input_IMU(IMU1_y_Accel, path, 0);
+        chk |= input_IMU(IMU1_z_Accel, path, 0);
 
-        chk |= input_IMU(IMU1_x_Rot);
-        chk |= input_IMU(IMU1_y_Rot);
-        chk |= input_IMU(IMU1_z_Rot);
+        chk |= input_IMU(IMU1_x_Rot, path, 0);
+        chk |= input_IMU(IMU1_y_Rot, path, 0);
+        chk |= input_IMU(IMU1_z_Rot, path, 0);
 
-        chk |= input_IMU(IMU2_x_Accel);
-        chk |= input_IMU(IMU2_y_Accel);
-        chk |= input_IMU(IMU2_z_Accel);
+        chk |= input_IMU(IMU2_x_Accel, path, 0);
+        chk |= input_IMU(IMU2_y_Accel, path, 0);
+        chk |= input_IMU(IMU2_z_Accel, path, 0);
 
-        chk |= input_IMU(IMU2_x_Rot);
-        chk |= input_IMU(IMU2_y_Rot);
-        chk |= input_IMU(IMU2_z_Rot);
+        chk |= input_IMU(IMU2_x_Rot, path, 0);
+        chk |= input_IMU(IMU2_y_Rot, path, 0);
+        chk |= input_IMU(IMU2_z_Rot, path, 1);
 
-        // chk |= input_IMU(nl);
 
         if (chk) 
         {
@@ -54,53 +60,51 @@ void full_data_write(char* time, char* IMU1_x_Accel, char* IMU1_y_Accel, char* I
         SD_write_error = false;
     }
 
-void half_data_write(char* time, char* IMU_num,char* IMU_x_Accel, char* IMU_y_Accel, 
+void half_data_write(const char * path, char* time, char* IMU_num,char* IMU_x_Accel, char* IMU_y_Accel, 
     char* IMU_z_Accel, char* IMU_x_Rot, char* IMU_y_Rot, char* IMU_z_Rot){
         int chk = 0;
-        char* nl = "/n";
-        char* zero = "0";
+        char* zero = "";
 
         if (IMU_num[0] == '1'){
         
-            chk |= input_IMU(time);
+            chk |= input_IMU(time, path, 0);
 
-            chk |= input_IMU(IMU_x_Accel);
-            chk |= input_IMU(IMU_y_Accel);
-            chk |= input_IMU(IMU_z_Accel);
+            chk |= input_IMU(IMU_x_Accel, path, 0);
+            chk |= input_IMU(IMU_y_Accel, path, 0);
+            chk |= input_IMU(IMU_z_Accel, path, 0);
 
-            chk |= input_IMU(IMU_x_Rot);
-            chk |= input_IMU(IMU_y_Rot);
-            chk |= input_IMU(IMU_z_Rot);
+            chk |= input_IMU(IMU_x_Rot, path, 0);
+            chk |= input_IMU(IMU_y_Rot, path, 0);
+            chk |= input_IMU(IMU_z_Rot, path, 1);
 
-            chk |= input_IMU(zero);
-            chk |= input_IMU(zero);
-            chk |= input_IMU(zero);
+            // chk |= input_IMU(zero, path, 0);
+            // chk |= input_IMU(zero, path, 0);
+            // chk |= input_IMU(zero, path, 0);
 
-            chk |= input_IMU(zero);
-            chk |= input_IMU(zero);
-            chk |= input_IMU(zero);
+            // chk |= input_IMU(zero, path, 0);
+            // chk |= input_IMU(zero, path, 0);
+            // chk |= input_IMU(zero, path, 1);
         }
         else {
-            chk |= input_IMU(time);
+            chk |= input_IMU(time, path, 0);
 
-            chk |= input_IMU(zero);
-            chk |= input_IMU(zero);
-            chk |= input_IMU(zero);
+            chk |= input_IMU(zero, path, 0);
+            chk |= input_IMU(zero, path, 0);
+            chk |= input_IMU(zero, path, 0);
 
-            chk |= input_IMU(zero);
-            chk |= input_IMU(zero);
-            chk |= input_IMU(zero);
+            chk |= input_IMU(zero, path, 0);
+            chk |= input_IMU(zero, path, 0);
+            chk |= input_IMU(zero, path, 0);
 
-            chk |= input_IMU(IMU_x_Accel);
-            chk |= input_IMU(IMU_y_Accel);
-            chk |= input_IMU(IMU_z_Accel);
+            chk |= input_IMU(IMU_x_Accel, path, 0);
+            chk |= input_IMU(IMU_y_Accel, path, 0);
+            chk |= input_IMU(IMU_z_Accel, path, 0);
 
-            chk |= input_IMU(IMU_x_Rot);
-            chk |= input_IMU(IMU_y_Rot);
-            chk |= input_IMU(IMU_z_Rot);
+            chk |= input_IMU(IMU_x_Rot, path, 0);
+            chk |= input_IMU(IMU_y_Rot, path, 0);
+            chk |= input_IMU(IMU_z_Rot, path, 1);
         }
 
-        // chk |= input_IMU(nl);
     }
 
 
@@ -262,10 +266,63 @@ void init_lcd_spi(){
 }
 
 // checks if the SD card's connection is stable
-bool SDStable()
+_Bool SDStable()
 {
     if (!SD_is_setup) return true;
     return !SD_write_error &&
            (!(USART5->ISR & USART_ISR_TEACK) || !(USART5->ISR & USART_ISR_REACK))
            ;
+}
+
+int imu_val_update(int raw){
+   int bit_const = 16384; // 2^15/2 or 2^14
+   int grav_const = 9.80655; // m/s^2
+   int div = bit_const * grav_const;
+   return (round(raw / div));
+
+}
+
+char* int_to_str(int read){
+    int dig_len = log10(read);
+    char* str = malloc(dig_len * sizeof(char) + 1);
+    for( int i = dig_len; i < 0; i--){
+        int temp = (read / (i - 1)) % 10;
+        str[dig_len - i] = temp - '0';
+    }
+    str[dig_len] = '\0';
+    return (str);
+}
+
+void set_sd_stream(){
+    setbuf(stdin,0);
+    setbuf(stdout,0);
+    setbuf(stderr,0);
+}
+static void TIM2_50ms_Init(void)
+{
+    // Enable peripheral clock
+    RCC->APB1ENR |= RCC_APB1ENR_TIM2EN;
+
+    // Timing (psc arr and cnt)
+    TIM2->PSC = (uint16_t)(SystemCoreClock / 1000U - 1U); //PSC = (48 000 000 / 1 000) – 1 = 47 999
+    TIM2->ARR = 50U - 1U;                                 /* period     */
+    TIM2->CNT = 0;                                        /* reset CNT  */
+
+    
+    TIM2->DIER |= TIM_DIER_UIE; //Enable update interrupt
+
+    TIM2->CR1  |= TIM_CR1_CEN; //start counter
+
+    // NVIC setup
+    NVIC_SetPriority(TIM2_IRQn, 1);
+    NVIC_EnableIRQ(TIM2_IRQn);
+}
+
+void TIM2_IRQHandler(void)
+{
+    if (TIM2->SR & TIM_SR_UIF)          // check update flag set?          
+    {
+        TIM2->SR &= ~TIM_SR_UIF;        // clear it (write 0)
+        write_to_sd();                  // begin the functions to                
+    }
 }
