@@ -4,8 +4,9 @@
 
 void setupTIM6();
 
-bool isConnStable();
+bool inline isConnStable();
 
-bool SDStable();
+bool inline SDStable();
+bool inline mpuStable();
 
 #endif //ALARM_H

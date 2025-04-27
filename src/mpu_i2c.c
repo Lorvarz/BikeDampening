@@ -9,16 +9,10 @@
 
 #include "stm32f0xx.h"
 #include <stdio.h>
+#include <stdbool.h>
 
-void internal_clock();
-void enable_ports();
-void init_i2c();
-void i2c_start(uint32_t targadr, uint8_t size, uint8_t dir);
-void i2c_stop();
-void i2c_waitidle();
-void i2c_clearnack();
-int i2c_checknack();
-extern void nano_wait(int);
+#include "mpu_i2c.h"
+#include "alarm.h"
 
 // used for accelerometer data
 typedef struct {
@@ -228,6 +222,12 @@ int __io_getchar(void) {
 //===========================================================================
 // IRQHandler for USART5
 //===========================================================================
+
+#define FIFOSIZE 16
+extern char serfifo[FIFOSIZE];
+extern int seroffset;
+extern struct fifo input_fifo;
+
 int USART3_8_IRQHandler(void){
     while(DMA2_Channel2->CNDTR != sizeof serfifo - seroffset) {
         if (!fifo_full(&input_fifo))
@@ -236,42 +236,21 @@ int USART3_8_IRQHandler(void){
     } 
 }
 
-void mpu_readwhoami(uint8_t addr)
-{
-    uint8_t reg = 0x75;
-    uint8_t data = 0;
-    if (i2c_senddata(addr, &reg, 1) < 0){
-        printf("Write to MPU @  0x%02x failed\n");
-        return;
-    }
-    
-    if (i2c_recvdata(addr, &data, 1) < 0){
-        printf("Read from MPU @  0x%02x failed\n");
-        return;
-    }
-   
-    
-    printf("MPU @ 0x%02X WHOAM_I = 0x%02X\n", addr, data);
-    
-    
-}
-void whoami(int argc, char *argv[]){
-    mpu_readwhoami(0x68);
-    mpu_readwhoami(0x69);
-}
-
+static bool mpuError = false;
 int mpu_read_accel(uint8_t addr, AccelData *accel)
 {
     uint8_t reg = 0x3B; // Start of accelerometer data 
     uint8_t raw[6];
 
     if (i2c_senddata(addr, &reg, 1) < 0) {
-        //printf("MPU @ 0x%02X write failed\n", addr);
+        mpuError = true;
+        printf("MPU @ 0x%02X write failed\n", addr);
         return -1;
     }
 
     if (i2c_recvdata(addr, raw, 6) < 0) {
-        //printf("MPU @ 0x%02X read failed\n", addr);
+        mpuError = true;
+        printf("MPU @ 0x%02X read failed\n", addr);
         return -1;
     }
 
@@ -279,6 +258,7 @@ int mpu_read_accel(uint8_t addr, AccelData *accel)
     accel->ay = (raw[2] << 8) | raw[3];
     accel->az = (raw[4] << 8) | raw[5];
     
+    mpuError = false;
     return 0;
 }
 
@@ -290,57 +270,16 @@ void mpu6050_init(uint8_t addr)
 
     
 }
+
 void setup_imu(){
     enable_ports();
     init_i2c();
-    mpu6050_init(0x68);
-    mpu6050_init(0x69);
+    mpu6050_init(GROUND_NPU);
+    mpu6050_init(HIGH_NPU);
     enable_tty_interrupt();
-    
 }
-int main()
+
+void inline mpuStable()
 {
-    internal_clock();
-    
-    // I2C specific
-    enable_ports();
-    init_i2c();
-    //i2c_start(0x56,0,0);
-    //i2c_stop();
-    // If you don't want to deal with the command shell, you can
-    // comment out all code below and call
-    // eeprom_read/eeprom_write directly.
-    init_usart5();
-    mpu6050_init(0x68);
-    mpu6050_init(0x69);
-    enable_tty_interrupt();
-    /*printf("Reading WHO_AM_I from MPU...\n");
-    mpu_readwhoami(0x68);
-    nano_wait(1000);
-    mpu_readwhoami(0x69);
-    */
-    // These turn off buffering.
-    //setbuf(stdin, 0);
-    //setbuf(stdout, 0);
-    //setbuf(stderr, 0);
-
-    /*AccelData wheel, fork;
-
-    while (1)
-    {
-        if (mpu_read_accel(0x68, &wheel) == 0)
-            printf("WHEEL: ax=%d  ay=%d  az=%d\n", wheel.ax, wheel.ay, wheel.az);
-        else
-            printf("Failed to read wheel accel\n");
-
-        if (mpu_read_accel(0x69, &fork) == 0)
-            printf("FORK:  ax=%d  ay=%d  az=%d\n", fork.ax, fork.ay, fork.az);
-        else
-            printf("Failed to read fork accel\n");
-
-        nano_wait(5000000); // Wait 5ms between reads (tune as needed)
-    }
-
-    */while(1);
- 
+    return !mpuError;
 }
