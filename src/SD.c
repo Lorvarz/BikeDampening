@@ -4,7 +4,7 @@
 #include "fifo.h"
 #include <stdio.h>
 #include <math.h>
-#include "mpu_6050.h"
+#include "mpu_i2c.h"
 
 #include "commands.h"
 #include "alarm.h"
