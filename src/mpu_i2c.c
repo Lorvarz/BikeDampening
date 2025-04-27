@@ -288,14 +288,7 @@ void mpu6050_init(uint8_t addr)
     config[0] = 0x6B;
     config[1] = 0x00;
 
-    if (i2c_senddata(addr, config, 2) < 0)
-    {
-        //printf("Failed to wake MPU @ 0x%02x\n", addr);
-    }
-    else
-    {
-        //printf("MPU @ 0x%02x\n", addr);
-    }
+    
 }
 void setup_imu(){
     enable_ports();
