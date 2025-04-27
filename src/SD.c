@@ -4,6 +4,7 @@
 #include "fifo.h"
 #include <stdio.h>
 #include <math.h>
+#include "mpu_6050.h"
 
 #include "commands.h"
 #include "alarm.h"
@@ -325,8 +326,33 @@ void TIM2_IRQHandler(void)
     if (TIM2->SR & TIM_SR_UIF)          // check update flag set?          
     {
         TIM2->SR &= ~TIM_SR_UIF;        // clear it (write 0)
-        mpu_read_accel(0x68, &wheel)
-        mpu_read_accel(0x69, &fork)
-        write_to_sd();                  // begin the functions to                
+
+        //Rotation data not collected
+        //Wheel is defined as IMU 1
+        //Fork is defined as IMU 2
+        mpu_read_accel(0x68, &wheel);
+        mpu_read_accel(0x69, &fork);
+
+        
+        char* IMU1_x_Accel = int_to_str(imu_val_update(wheel.ax));
+        char* IMU1_y_Accel = int_to_str(imu_val_update(wheel.ay));
+        char* IMU1_z_Accel = int_to_str(imu_val_update(wheel.az));
+        char* IMU2_x_Accel = int_to_str(imu_val_update(fork.ax));
+        char* IMU2_y_Accel = int_to_str(imu_val_update(fork.ay));
+        char* IMU2_z_Accel = int_to_str(imu_val_update(fork.az));
+        
+        char* time = "0";
+        char* IMU1_x_Rot = "0";
+        char* IMU1_y_Rot = "0";
+        char* IMU1_z_Rot = "0";
+        char* IMU2_x_Rot = "0";
+        char* IMU2_y_Rot = "0";
+        char* IMU2_z_Rot = "0";
+        
+        full_data_write("test.txt", time,                   //IMU 1+2 prints
+        IMU1_x_Accel, IMU1_y_Accel, IMU1_z_Accel,           //IMU 1 Acceleration prints
+        IMU1_x_Rot, IMU1_y_Rot, IMU1_z_Rot,                 //IMU 1 Rotation prints
+        IMU2_x_Accel, IMU2_y_Accel, IMU2_z_Accel,           //IMU 2 Acceleration prints
+        IMU2_x_Rot, IMU2_y_Rot, IMU2_z_Rot);                //IMU 2 Rotation prints                
     }
 }
