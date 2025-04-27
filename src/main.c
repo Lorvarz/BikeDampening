@@ -5,18 +5,23 @@
 #ifdef active
 #include <stdio.h>
 #include "stm32f0xx.h"
-// #include "ff.h"
 
 int main() {
     internal_clock();
+    
+    /* Set up for SD card writes */
     enable_tty_interrupt();
     set_sd_stream();
-    
     char* fn = "test.csv";
     SD_setup(fn); //mount and remove previous file by name fn
+    write_header(fn);
+
+    /* Set up for alram */
     setupDAC();
     setupTIM6();
-    write_header(fn);
+
+    /* Set up for pwm*/
+    void take_button_input(); 
 
     for (;;){
         __WFI();
