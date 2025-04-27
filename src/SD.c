@@ -318,11 +318,15 @@ static void TIM2_50ms_Init(void)
     NVIC_EnableIRQ(TIM2_IRQn);
 }
 
+
 void TIM2_IRQHandler(void)
 {
+    AccelData wheel, fork;
     if (TIM2->SR & TIM_SR_UIF)          // check update flag set?          
     {
         TIM2->SR &= ~TIM_SR_UIF;        // clear it (write 0)
+        mpu_read_accel(0x68, &wheel)
+        mpu_read_accel(0x69, &fork)
         write_to_sd();                  // begin the functions to                
     }
 }
