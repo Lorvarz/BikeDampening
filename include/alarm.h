@@ -4,10 +4,10 @@
 
 void setupTIM6();
 
-bool inline isConnStable();
+bool  isConnStable();
 
-bool inline SDStable();
-bool inline mpuStable();
-void inline setupDAC();
+bool  SDStable();
+bool  mpuStable();
+void  setupDAC();
 
 #endif //ALARM_H

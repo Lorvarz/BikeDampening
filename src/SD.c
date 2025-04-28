@@ -287,15 +287,21 @@ bool inline SDStable()
 
 int imu_val_update(int raw){
    int bit_const = 16384; // 2^15/2 or 2^14
-   int grav_const = 9.80655; // m/s^2
+   int grav_const = 10; // m/s^2
    int div = bit_const * grav_const;
    return (round(raw / div));
 
 }
 
 char* int_to_str(int read){
-    int dig_len = log10(read);
-    char* str = malloc(dig_len * sizeof(char) + 1);
+    
+    int dig_len;
+    if (read < 1)
+        dig_len = 1;
+    else
+        dig_len = log10(read);
+    
+    char* str = calloc(1, dig_len * sizeof(char) + 1);
     for( int i = dig_len; i < 0; i--){
         int temp = (read / (i - 1)) % 10;
         str[dig_len - i] = temp - '0';
@@ -309,7 +315,7 @@ void set_sd_stream(){
     setbuf(stdout,0);
     setbuf(stderr,0);
 }
-static void TIM2_50ms_Init(void)
+void TIM2_50ms_Init(void)
 {
     // Enable peripheral clock
     RCC->APB1ENR |= RCC_APB1ENR_TIM2EN;
@@ -325,8 +331,8 @@ static void TIM2_50ms_Init(void)
     TIM2->CR1  |= TIM_CR1_CEN; //start counter
 
     // NVIC setup
-    NVIC_SetPriority(TIM2_IRQn, 1);
     NVIC_EnableIRQ(TIM2_IRQn);
+    NVIC_SetPriority(TIM2_IRQn, 1);
 }
 
 
@@ -388,4 +394,6 @@ void SD_setup(char* fn){
     res = f_unlink(fn);
         if (res != FR_OK)
             print_error(res, fn);
+
+    
 }
