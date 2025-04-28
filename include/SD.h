@@ -47,4 +47,8 @@ char* int_to_str(int read);
 void set_sd_stream();
 
 void SD_setup(char* fn);
+
+void TIM2_50ms_Init(void);
+
+void TIM2_IRQHandler(void);
 #endif

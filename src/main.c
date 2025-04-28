@@ -402,14 +402,16 @@ int main() {
 #ifdef test_int
 int main() {
     internal_clock();
-    
+
     init_usart5();
     enable_tty_interrupt();
 
     set_sd_stream();
     char* fn = "test.csv";
     SD_setup(fn); //mount and remove previous file by name fn
-    write_header(fn);
+    
+    TIM2_50ms_Init();
+    
 
     for (;;){
         __WFI();

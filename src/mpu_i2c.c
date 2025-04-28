@@ -15,7 +15,7 @@
 #include "alarm.h"
 #include "fifo.h"
 
-
+//#define usart //uncomment for testing i2c alone
 
 
 //===========================================================================
@@ -219,7 +219,7 @@ __attribute((weak)) __io_getchar(void) {
 //===========================================================================
 // IRQHandler for USART5
 //===========================================================================
-
+#ifdef usart
 #define FIFOSIZE 16
 extern char serfifo[FIFOSIZE];
 extern int seroffset;
@@ -233,7 +233,9 @@ int USART3_8_IRQHandler(void){
     } 
 }
 
-bool mpuError = false;
+#endif
+
+static bool mpuError = false;
 int mpu_read_accel(uint8_t addr, AccelData *accel)
 {
     uint8_t reg = 0x3B; // Start of accelerometer data 

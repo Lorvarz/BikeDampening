@@ -200,7 +200,7 @@ void TIM6_DAC_IRQHandler()
     }
 }
 
-bool inline isConnStable()
+bool isConnStable()
 {
     return false;
     // return SDStable() && mpuStable();
