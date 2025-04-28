@@ -1,6 +1,7 @@
 #include "stm32f0xx.h"
 #include <math.h>   // for M_PI
 #include <stdio.h>
+#include "pwm.h"
 
 void setup_pwm(void) {
     // Generally the steps are similar to those in setup_tim3

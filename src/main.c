@@ -1,6 +1,6 @@
 //File should contain all the different testing def below active main
 
-#define active //Main
+// #define active //Main
 
 #ifdef active
 #include <stdio.h>
@@ -45,7 +45,10 @@ int main() {
 // #define testSD_5 // Header + variable data writes for infinity
 // #define testSD_6 // csv data type with rand data writes for infinity
 
-#if defined(testSD) || defined(testSD_1) || defined(testSD_2) || defined(testSD_3) || defined(testSD_4) || defined(testSD_5) || defined(testSD_6)
+//Integration Tests
+#define test_int // timer call sd writes
+
+#if defined(testSD) || defined(testSD_1) || defined(testSD_2) || defined(testSD_3) || defined(testSD_4) || defined(testSD_5) || defined(testSD_6) || defined(test_int)
 
 #include <stdio.h>
 #include "stm32f0xx.h"
@@ -396,4 +399,24 @@ int main() {
     }
     test_cat("test.csv");
 }
+#endif
+
+
+#ifdef test_int
+int main() {
+    internal_clock();
+    
+    init_usart5();
+    enable_tty_interrupt();
+
+    set_sd_stream();
+    char* fn = "test.csv";
+    SD_setup(fn); //mount and remove previous file by name fn
+    write_header(fn);
+
+    for (;;){
+        __WFI();
+    }
+}
+
 #endif

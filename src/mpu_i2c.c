@@ -13,13 +13,10 @@
 
 #include "mpu_i2c.h"
 #include "alarm.h"
+#include "fifo.h"
 
-// used for accelerometer data
-typedef struct {
-    int16_t ax;
-    int16_t ay;
-    int16_t az;
-} AccelData;
+
+
 
 //===========================================================================
 // Configure SDA and SCL.
@@ -200,7 +197,7 @@ int i2c_checknack(void)
     return (I2C1->ISR & I2C_ISR_NACKF) ? 1 : 0;
 }
 
-int __io_putchar(int c) {
+__attribute((weak)) int __io_putchar(int c) {
     // TODO copy from STEP2
     if(c == '\n')
     {
@@ -215,7 +212,7 @@ int __io_putchar(int c) {
 //===========================================================================
 // __io_getchar
 //===========================================================================
-int __io_getchar(void) {
+__attribute((weak)) __io_getchar(void) {
     // TODO Use interrupt_getchar() instead of line_buffer_getchar()
     return interrupt_getchar();
 }
@@ -279,7 +276,7 @@ void setup_imu(){
     enable_tty_interrupt();
 }
 
-void inline mpuStable()
+bool inline mpuStable()
 {
     return !mpuError;
 }

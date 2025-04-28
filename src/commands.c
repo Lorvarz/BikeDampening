@@ -358,6 +358,8 @@ int input_IMU(const char * data, const char * path, int nl){
         if( bw < 1){ return (2);}//return error 2 if volume is full
     }
     f_close(&fil);
+
+    return(0);
     
 }
 
@@ -565,7 +567,6 @@ struct commands_t cmds[] = {
         { "date", date },
         { "dino", dino },
         { "input", input },
-        { "input_IMU", input_IMU },
         { "lcd_init", lcd_init },
         { "ls", ls },
         { "mkdir", mkdir },

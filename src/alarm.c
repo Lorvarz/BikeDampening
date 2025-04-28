@@ -2,6 +2,7 @@
 
 #ifndef ALARM_C
 #include "alarm.h"
+#include <math.h>
 
 // ---------------------------- setup macros/funcs ----------------------------
 #define rightFill(numBits) (~(~0 << (numBits)))
@@ -96,7 +97,7 @@ short int wavetable[N];
 int step = (SOUND_FREQ * N / RATE) * (1<<16);;
 int offset = 0;
 
-#define M_PI 3.14159
+// #define M_PI 3.14159
 static void init_wavetable(void) {
     for(int i=0; i < N; i++)
         wavetable[i] = 32767 * sin(2 * M_PI * i / N);

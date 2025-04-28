@@ -6,6 +6,7 @@
 #include <math.h>
 #include "mpu_i2c.h"
 #include "ff.h"
+#include <stdlib.h>
 
 #include "commands.h"
 #include "alarm.h"
@@ -339,10 +340,16 @@ void TIM2_IRQHandler(void)
         //Rotation data not collected
         //Wheel is defined as IMU 1
         //Fork is defined as IMU 2
-        mpu_read_accel(0x68, &wheel);
-        mpu_read_accel(0x69, &fork);
+        //mpu_read_accel(0x68, &wheel);
+        //mpu_read_accel(0x69, &fork);
 
-        
+        wheel.ax =  123;
+        wheel.ay =  456;
+        wheel.az =  789;
+        fork.ax = 1011;
+        fork.ay = 1213;
+        fork.az = 1415;
+
         char* IMU1_x_Accel = int_to_str(imu_val_update(wheel.ax));
         char* IMU1_y_Accel = int_to_str(imu_val_update(wheel.ay));
         char* IMU1_z_Accel = int_to_str(imu_val_update(wheel.az));
