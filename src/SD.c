@@ -286,10 +286,10 @@ bool inline SDStable()
 }
 
 int imu_val_update(int raw){
-   int bit_const = 16384; // 2^15/2 or 2^14
-   int grav_const = 10; // m/s^2
-   int div = bit_const * grav_const;
-   return (round(raw / div));
+//    int bit_const = 16384; // 2^15/2 or 2^14
+//    int grav_const = 10; // m/s^2
+//    int div = bit_const * grav_const;
+   return (round(raw));// / div));
 
 }
 
@@ -299,14 +299,21 @@ char* int_to_str(int read){
     if (read < 1)
         dig_len = 1;
     else
-        dig_len = log10(read);
+        dig_len = log10(read) + 1;
     
-    char* str = calloc(1, dig_len * sizeof(char) + 1);
-    for( int i = dig_len; i < 0; i--){
-        int temp = (read / (i - 1)) % 10;
-        str[dig_len - i] = temp - '0';
+    char* str = malloc( dig_len * sizeof(char) + 1);
+    for( int i = dig_len; i > 1; i--){
+        int j = i;
+        int k = 1;
+        while (j > 1){
+            k *= 10;
+            j--;
+        }
+        int temp = (read / k) % 10;
+        str[dig_len - i] = temp + '0';
     }
     str[dig_len] = '\0';
+    if (str == NULL) str[0] = 0;
     return (str);
 }
 

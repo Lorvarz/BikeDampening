@@ -53,7 +53,7 @@ int main() {
 // #define testSD_6 // csv data type with rand data writes for infinity
 
 //Integration Tests
-#define test_int // timer call sd writes
+// #define test_int // timer call sd writes
 
 
 #ifdef testSD
@@ -425,7 +425,7 @@ int main()
 {
     internal_clock();
 
-    setupTim6();
+    setupTIM6();
     setupDAC();
 
     while(1);
