@@ -233,7 +233,7 @@ int USART3_8_IRQHandler(void){
     } 
 }
 
-static bool mpuError = false;
+bool mpuError = false;
 int mpu_read_accel(uint8_t addr, AccelData *accel)
 {
     uint8_t reg = 0x3B; // Start of accelerometer data 

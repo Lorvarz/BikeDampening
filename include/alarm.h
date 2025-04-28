@@ -3,11 +3,11 @@
 #include <stdbool.h>
 
 void setupTIM6();
+void setupDAC();
 
 bool inline isConnStable();
 
 bool inline SDStable();
 bool inline mpuStable();
-void inline setupDAC();
 
 #endif //ALARM_H

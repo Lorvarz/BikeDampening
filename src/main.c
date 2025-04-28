@@ -2,9 +2,15 @@
 
 // #define active //Main
 
-#ifdef active
 #include <stdio.h>
 #include "stm32f0xx.h"
+#include "commands.h"
+#include "SD.h"
+#include "ff.h"
+
+
+#ifdef active
+
 
 int main() {
     internal_clock();
@@ -32,7 +38,8 @@ int main() {
 
 
 
-
+//Alarm tests
+#define TEST_ALARM
 
 //Hard coded SD tests
 // #define testSD   // command shell to validate
@@ -47,16 +54,6 @@ int main() {
 
 //Integration Tests
 #define test_int // timer call sd writes
-
-#if defined(testSD) || defined(testSD_1) || defined(testSD_2) || defined(testSD_3) || defined(testSD_4) || defined(testSD_5) || defined(testSD_6) || defined(test_int)
-
-#include <stdio.h>
-#include "stm32f0xx.h"
-#include "commands.h"
-#include "SD.h"
-#include "ff.h"
-
-#endif
 
 
 #ifdef testSD
@@ -417,6 +414,19 @@ int main() {
     for (;;){
         __WFI();
     }
+}
+
+#endif
+
+#ifdef TEST_ALARM
+int main()
+{
+    internal_clock();
+
+    setupTim6();
+    setupDAC();
+
+    while(1);
 }
 
 #endif

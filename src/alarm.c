@@ -113,6 +113,7 @@ void setupDAC()
     setBits(DAC1->CR, 5, 3, 0b000);
     DAC1->CR |= DAC_CR_TEN1;
     DAC1->CR |= DAC_CR_EN1;
+    init_wavetable();
 }
 
 void setupTIM6()
@@ -144,22 +145,22 @@ void TIM6_DAC_IRQHandler()
     bool newStable = isConnStable();
     if (!isConnected && newStable)
     {
-        isConnected = newStable;
+        isConnected = true;
         inReset = false;
         intervalCounter = 0;
         pulsesPlayed = 0;
         cyclesPlayed = 0;
-    }else if (!isConnected && !newStable)
+        return;
+    }else if (isConnected && newStable)
     {
         return;
     } else if (isConnected && !newStable)
     {
-        isConnected = newStable;
+        isConnected = false;
         inReset = false;
         intervalCounter = 0;
         pulsesPlayed = 0;
         cyclesPlayed = 0;
-        return;
     }
 
     
@@ -173,7 +174,6 @@ void TIM6_DAC_IRQHandler()
             {
                 pulsesPlayed++;
             }
-            
         }
 
         int sample = wavetable[offset >> 16];
@@ -202,7 +202,8 @@ void TIM6_DAC_IRQHandler()
 
 bool inline isConnStable()
 {
-    return SDStable() && mpuStable();
+    return false;
+    // return SDStable() && mpuStable();
 }
 
 #endif
