@@ -22,4 +22,7 @@ void i2c_clearnack();
 int i2c_checknack();
 void i2c_start(uint32_t targadr, uint8_t size, uint8_t dir);
 
+int mpu_read_accel(uint8_t addr, AccelData *accel);
+void mpu6050_init(uint8_t addr);
+
 #endif

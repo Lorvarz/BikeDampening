@@ -154,7 +154,7 @@ void init_usart5() {
     SD_is_setup = true;
 }
 
-char interrupt_getchar() {
+__attribute((weak)) char interrupt_getchar() {
     // Wait for a newline to complete the buffer.
     while(fifo_newline(&input_fifo) == 0) {
         asm volatile ("wfi"); // wait for an interrupt
@@ -164,7 +164,7 @@ char interrupt_getchar() {
     return ch;
 }
 
-int __io_getchar(void) {
+__attribute((weak)) int __io_getchar(void) {
     // TODO Use interrupt_getchar() instead of line_buffer_getchar()
     return (int) interrupt_getchar();
 }
@@ -173,7 +173,7 @@ int __io_getchar(void) {
 char serfifo[FIFOSIZE];
 int seroffset = 0;
 
-int __io_putchar(int c) {
+__attribute((weak)) int __io_putchar(int c) {
     // TODO copy from STEP2
     if (c == '\n'){
         while(!(USART5->ISR & USART_ISR_TXE));
@@ -286,6 +286,7 @@ bool inline SDStable()
 }
 
 int imu_val_update(int raw){
+    // raw = raw * 1000;
 //    int bit_const = 16384; // 2^15/2 or 2^14
 //    int grav_const = 10; // m/s^2
 //    int div = bit_const * grav_const;
@@ -302,7 +303,7 @@ char* int_to_str(int read){
         dig_len = log10(read) + 1;
     
     char* str = malloc( dig_len * sizeof(char) + 1);
-    for( int i = dig_len; i > 1; i--){
+    for( int i = dig_len; i > 0; i--){
         int j = i;
         int k = 1;
         while (j > 1){
@@ -350,35 +351,36 @@ void TIM2_IRQHandler(void)
     {
         TIM2->SR &= ~TIM_SR_UIF;        // clear it (write 0)
 
+
         //Rotation data not collected
         //Wheel is defined as IMU 1
         //Fork is defined as IMU 2
         //mpu_read_accel(0x68, &wheel);
         //mpu_read_accel(0x69, &fork);
+        uint16_t wheel_add = (0x68);
+        uint16_t fork_add = (0x69);
 
-        wheel.ax =  123;
-        wheel.ay =  456;
-        wheel.az =  789;
-        fork.ax = 1011;
-        fork.ay = 1213;
-        fork.az = 1415;
+        mpu_read_accel(wheel_add, &wheel);
+        //mpu_read_accel(fork_add, &fork);
 
         char* IMU1_x_Accel = int_to_str(imu_val_update(wheel.ax));
         char* IMU1_y_Accel = int_to_str(imu_val_update(wheel.ay));
         char* IMU1_z_Accel = int_to_str(imu_val_update(wheel.az));
-        char* IMU2_x_Accel = int_to_str(imu_val_update(fork.ax));
-        char* IMU2_y_Accel = int_to_str(imu_val_update(fork.ay));
-        char* IMU2_z_Accel = int_to_str(imu_val_update(fork.az));
+        char* IMU2_x_Accel = "12"; //int_to_str(imu_val_update(fork.ax));
+        char* IMU2_y_Accel = "12"; //int_to_str(imu_val_update(fork.ay));
+        char* IMU2_z_Accel = "12"; //int_to_str(imu_val_update(fork.az));
         
-        char* time = "0";
-        char* IMU1_x_Rot = "0";
-        char* IMU1_y_Rot = "0";
-        char* IMU1_z_Rot = "0";
-        char* IMU2_x_Rot = "0";
-        char* IMU2_y_Rot = "0";
-        char* IMU2_z_Rot = "0";
+        char* time = "12";
+        char* IMU1_x_Rot = "12";
+        char* IMU1_y_Rot = "12";
+        char* IMU1_z_Rot = "12";
+        char* IMU2_x_Rot = "12";
+        char* IMU2_y_Rot = "12";
+        char* IMU2_z_Rot = "12";
         
-        full_data_write("test.txt", time,                   //IMU 1+2 prints
+        printf("%s\n", IMU1_x_Accel);
+        printf("MPU @ 0x68: %s, %s, %s, %s, %s, %s \n", IMU1_x_Accel, IMU1_y_Accel, IMU1_z_Accel, IMU2_x_Accel, IMU2_y_Accel, IMU2_z_Accel);
+        full_data_write("test.csv", time,                   //IMU 1+2 prints
         IMU1_x_Accel, IMU1_y_Accel, IMU1_z_Accel,           //IMU 1 Acceleration prints
         IMU1_x_Rot, IMU1_y_Rot, IMU1_z_Rot,                 //IMU 1 Rotation prints
         IMU2_x_Accel, IMU2_y_Accel, IMU2_z_Accel,           //IMU 2 Acceleration prints
@@ -397,10 +399,10 @@ void SD_setup(char* fn){
         print_error(res, "Error occurred while mounting");
     }
 
-    //RM previous test file
-    res = f_unlink(fn);
-        if (res != FR_OK)
-            print_error(res, fn);
+    // //RM previous test file
+    // res = f_unlink(fn);
+    //     if (res != FR_OK && res != FR_NO_FILE)
+    //         print_error(res, fn);
 
     
 }

@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include "stm32f0xx.h"
 #include "commands.h"
+#include "mpu_i2c.h"
 #include "SD.h"
 #include "ff.h"
 
@@ -39,10 +40,10 @@ int main() {
 
 
 //Alarm tests
-#define TEST_ALARM
+// #define TEST_ALARM
 
 //Hard coded SD tests
-// #define testSD   // command shell to validate
+#define testSD   // command shell to validate
 // #define testSD_1 // Header itself
 // #define testSD_2 // Header + Header (test Append)
 // #define testSD_3 // Hard coded number 
@@ -54,6 +55,7 @@ int main() {
 
 //Integration Tests
 // #define test_int // timer call sd writes
+// #define i2c_test
 
 
 #ifdef testSD
@@ -403,12 +405,31 @@ int main() {
 int main() {
     internal_clock();
 
+    enable_ports();
+    init_i2c();
     init_usart5();
+    mpu6050_init(0x68);
+    mpu6050_init(0x69);
+
     enable_tty_interrupt();
 
-    set_sd_stream();
-    char* fn = "test.csv";
-    SD_setup(fn); //mount and remove previous file by name fn
+    // set_sd_stream();
+    setbuf(stdin,0);
+    setbuf(stdout,0);
+    setbuf(stderr,0);
+
+    char* fn = "test.csv"; //mut be changed in tim2_irqhandler as well
+    // SD_setup(fn); //mount and remove previous file by name fn
+    FATFS fstorage;
+    FATFS* fs = &fstorage;
+
+    //Mounting cmds
+    // FRESULT res = f_mount(NULL, "", 1); // make sure unmounted
+    FRESULT res = f_mount(fs, "", 1); //mount
+    if (res != FR_OK){
+        print_error(res, "Error occurred while mounting");
+    }
+    write_header();
     
     TIM2_50ms_Init();
     
@@ -429,6 +450,38 @@ int main()
     setupDAC();
 
     while(1);
+}
+
+#endif
+
+#ifdef i2c_test
+int main() {
+    internal_clock();
+
+    enable_ports();
+    init_i2c();
+    init_usart5();
+    mpu6050_init(0x68);
+    mpu6050_init(0x69);
+    setbuf(stdin,0);
+    setbuf(stdout,0);
+    setbuf(stderr,0);
+
+    AccelData wheel, fork;
+
+    while (1)
+    {
+        if(mpu_read_accel(0x68, &wheel) == 0)
+            printf("Wheel: ax=%d  ay=%d  az=%d\n", wheel.ax, wheel.ay, wheel.az);
+        else 
+            printf("Failed to read wheel accel\n");
+        if(mpu_read_accel(0x69, &fork) == 0)
+            printf("Wheel: ax=%d  ay=%d  az=%d\n", fork.ax, fork.ay, fork.az);
+        else 
+            printf("Failed to read fork accel\n");
+
+        nano_wait(5000000);
+    }
 }
 
 #endif

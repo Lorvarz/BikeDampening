@@ -326,7 +326,7 @@ int input_IMU(const char * data, const char * path, int nl){
     //char line[227]; /* Line buffer */ /////was 250  //not used
     FRESULT fr;     /* FatFs return code */
     fr = f_open(&fil, path, FA_WRITE|FA_OPEN_EXISTING|FA_OPEN_APPEND); //works with FA_WRITE
-    if (fr) {
+    if (fr != FR_OK) {
         // print_error(fr, "thiswillwork.txt");
         return (1);
     }

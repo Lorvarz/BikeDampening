@@ -14,9 +14,15 @@
 #include "mpu_i2c.h"
 #include "alarm.h"
 #include "fifo.h"
+#include "tty.h"
 
 //#define usart //uncomment for testing i2c alone
-
+char* interrupt_getchar(){
+    while(fifo_newline(&input_fifo) == 0){
+        asm volatile ("wfi");
+    }
+    return fifo_remove(&input_fifo);
+}
 
 //===========================================================================
 // Configure SDA and SCL.
@@ -197,7 +203,7 @@ int i2c_checknack(void)
     return (I2C1->ISR & I2C_ISR_NACKF) ? 1 : 0;
 }
 
-__attribute((weak)) int __io_putchar(int c) {
+ int __io_putchar(int c) {
     // TODO copy from STEP2
     if(c == '\n')
     {
@@ -212,7 +218,7 @@ __attribute((weak)) int __io_putchar(int c) {
 //===========================================================================
 // __io_getchar
 //===========================================================================
-__attribute((weak)) __io_getchar(void) {
+ __io_getchar(void) {
     // TODO Use interrupt_getchar() instead of line_buffer_getchar()
     return interrupt_getchar();
 }
@@ -267,7 +273,12 @@ void mpu6050_init(uint8_t addr)
     config[0] = 0x6B;
     config[1] = 0x00;
 
-    
+    if (i2c_senddata(addr, config, 2) < 0){
+        printf("Failed to wake MPU @ 0x%02x\n", addr);
+    }
+    else{
+        printf("MPU @ 0x%02x\n", addr);
+    }
 }
 
 void setup_imu(){
