@@ -379,9 +379,9 @@ void TIM2_IRQHandler(void)
         char* IMU1_x_Accel = int_to_str(imu_val_update(wheel.ax));
         char* IMU1_y_Accel = int_to_str(imu_val_update(wheel.ay));
         char* IMU1_z_Accel = int_to_str(imu_val_update(wheel.az));
-        char* IMU2_x_Accel = "-"; //int_to_str(imu_val_update(fork.ax));
-        char* IMU2_y_Accel = "-"; //int_to_str(imu_val_update(fork.ay));
-        char* IMU2_z_Accel = "-"; //int_to_str(imu_val_update(fork.az));
+        char* IMU2_x_Accel = int_to_str(imu_val_update(fork.ax));
+        char* IMU2_y_Accel = int_to_str(imu_val_update(fork.ay));
+        char* IMU2_z_Accel = int_to_str(imu_val_update(fork.az));
         
         char* time = "-";
         char* IMU1_x_Rot = "-";
@@ -398,12 +398,12 @@ void TIM2_IRQHandler(void)
 		// 	IMU2_z_Accel[0], IMU2_z_Accel[1], IMU2_z_Accel[2], IMU2_z_Accel[3];
         
         // spi1_display2(str2);
-        // printf("MPU @ 0x68: %s, %s, %s\n", IMU1_x_Accel, IMU1_y_Accel, IMU1_z_Accel);
-        // full_data_write("test.csv", time,                   //IMU 1+2 prints
-        // IMU1_x_Accel, IMU1_y_Accel, IMU1_z_Accel,           //IMU 1 Acceleration prints
-        // IMU1_x_Rot, IMU1_y_Rot, IMU1_z_Rot,                 //IMU 1 Rotation prints
-        // IMU2_x_Accel, IMU2_y_Accel, IMU2_z_Accel,           //IMU 2 Acceleration prints
-        // IMU2_x_Rot, IMU2_y_Rot, IMU2_z_Rot);    
+        //printf("MPU @ 0x68: %s, %s, %s\n", IMU1_x_Accel, IMU1_y_Accel, IMU1_z_Accel);
+        full_data_write("test.csv", time,                   //IMU 1+2 prints
+        IMU1_x_Accel, IMU1_y_Accel, IMU1_z_Accel,           //IMU 1 Acceleration prints
+        IMU1_x_Rot, IMU1_y_Rot, IMU1_z_Rot,                 //IMU 1 Rotation prints
+        IMU2_x_Accel, IMU2_y_Accel, IMU2_z_Accel,           //IMU 2 Acceleration prints
+        IMU2_x_Rot, IMU2_y_Rot, IMU2_z_Rot);    
 
 		// char* str1 = str_to_disp(IMU1_x_Accel, IMU1_y_Accel, IMU1_z_Accel);
 		// spi1_display2(str1);            //IMU 2 Rotation prints                

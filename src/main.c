@@ -59,7 +59,7 @@ int main() {
 // #define testSD_6 // csv data type with rand data writes for infinity
 
 //Integration Tests
-// #define test_int // timer call sd writes
+#define test_int // timer call sd writes
 // #define i2c_test
 
 
