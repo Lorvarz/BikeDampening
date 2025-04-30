@@ -499,7 +499,7 @@ int main() {
 
 #ifdef oled_enable
 int main(){
-    init_spi1();
+    init_spi2();
     spi1_init_oled();
     char* str1 = "Hello World";
     char* str2 ="Guess Who";

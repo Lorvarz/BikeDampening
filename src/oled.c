@@ -23,6 +23,30 @@ void init_spi1() {
     SPI1->CR1 |= SPI_CR1_SPE; //enable communication ending config
 
 }
+void init_spi2() {
+    RCC->APB1ENR |= RCC_APB1ENR_SPI2EN; //enable clock to spi1 
+    RCC->AHBENR |= RCC_AHBENR_GPIOBEN;  //enable clock to GPIOA
+
+
+    GPIOB->MODER |= 0x8A000000; //set p15,13,12 to alternate function
+    GPIOB->MODER &= 0xB5FFFFFF; //cont
+
+    GPIOB->AFR[1] &=  ~(0xF0FF0000); //PA15 alternate set to AF0 (0000)
+    // GPIOA->AFR[0] &=  ~(0xF0000000); //PA7 alt set to AF0 (0000) SPI1 MOSI
+    // GPIOA->AFR[0] &=  ~(0x00F00000); //PA5 alt set to AF0 (0000) SPI1 SCK
+
+
+    SPI2->CR1 &= ~SPI_CR1_SPE; //disable communication for configuration
+    SPI2->CR1 |= SPI_CR1_BR_2 | SPI_CR1_BR_1 | SPI_CR1_BR_0; //set Baud Rate to f/256 (0 would be opposite)
+    SPI2->CR2 |= SPI_CR2_DS_Msk;   //set word size to 10 bit (1??1)
+    SPI2->CR2 &= ~SPI_CR2_DS_2 & ~SPI_CR2_DS_1; //set word size to 10 bit (?00?)
+    SPI2->CR1 |= SPI_CR1_MSTR; //puts spi1 into master selected mode
+    SPI2->CR2 |= SPI_CR2_NSSP; //enables NSS pusle managment
+    SPI2->CR2 |= SPI_CR2_SSOE; //enable SS output 
+    SPI2->CR2 |= SPI_CR2_TXDMAEN; //tx buffer empty causes dma enable
+    SPI2->CR1 |= SPI_CR1_SPE; //enable communication ending config
+
+}
 
 void spi1_init_oled() {
     spi_cmd(0x38); //sets oled "function set"
