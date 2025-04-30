@@ -415,6 +415,7 @@ int main() {
     init_usart5();
     mpu6050_init(0x68);
     mpu6050_init(0x69);
+    setup_pwm();
 
     enable_tty_interrupt();
 
@@ -443,7 +444,11 @@ int main() {
     write_header("test.csv");
     
     TIM2_50ms_Init();
+
+    take_button_input();
     
+    setupTIM6();
+    setupDAC();
 
     for (;;){
         __WFI();
