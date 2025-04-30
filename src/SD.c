@@ -374,7 +374,7 @@ void TIM2_IRQHandler(void)
         uint16_t fork_add = (0x69);
 
         mpu_read_accel(wheel_add, &wheel);
-        //mpu_read_accel(fork_add, &fork);
+        mpu_read_accel(fork_add, &fork);
 
         char* IMU1_x_Accel = int_to_str(imu_val_update(wheel.ax));
         char* IMU1_y_Accel = int_to_str(imu_val_update(wheel.ay));
