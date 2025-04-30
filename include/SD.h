@@ -2,17 +2,15 @@
 #define __SD_H
 #include "stdlib.h"
 
-int full_data_write(const char * path, char* time, 
-    char*  IMU1_x_Accel, char*  IMU1_y_Accel, char*  IMU1_z_Accel,
-    char*  IMU1_x_Rot, char*  IMU1_y_Rot, char*  IMU1_z_Rot,
-    char*  IMU2_x_Accel, char*  IMU2_y_Accel, char*  IMU2_z_Accel, 
-    char*  IMU2_x_Rot, char*  IMU2_y_Rot, char*  IMU2_z_Rot);
+void full_data_write(const char * path, char* time, char* IMU1_x_Accel, char* IMU1_y_Accel, char* IMU1_z_Accel,
+    char* IMU1_x_Rot, char* IMU1_y_Rot, char* IMU1_z_Rot,
+    char* IMU2_x_Accel, char* IMU2_y_Accel, char* IMU2_z_Accel, 
+    char* IMU2_x_Rot, char* IMU2_y_Rot, char* IMU2_z_Rot);
 
-int write_header();
+void write_header(const char * path);
 
-int half_data_write(const char* path, char*  time, char*  IMU_num,
-    char*  IMU_x_Accel, char*  IMU_y_Accel, char*  IMU_z_Accel, 
-    char*  IMU_x_Rot, char*  IMU_y_Rot, char*  IMU_z_Rot);
+void half_data_write(const char * path, char* time, char* IMU_num,char* IMU_x_Accel, char* IMU_y_Accel, 
+    char* IMU_z_Accel, char* IMU_x_Rot, char* IMU_y_Rot, char* IMU_z_Rot);
 
 void write_header2(const char * path);
 
@@ -51,4 +49,6 @@ void SD_setup(char* fn);
 void TIM2_50ms_Init(void);
 
 void TIM2_IRQHandler(void);
+
+char* str_to_disp(char* x, char* y, char* z);
 #endif

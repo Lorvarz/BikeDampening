@@ -6,7 +6,10 @@
 #include <math.h>
 #include "mpu_i2c.h"
 #include "ff.h"
+#include "string.h"
 #include <stdlib.h>
+#include "SD.h"
+#include "oled.h"
 
 #include "commands.h"
 #include "alarm.h"
@@ -354,8 +357,10 @@ void TIM2_50ms_Init(void)
 
 void TIM2_IRQHandler(void)
 {
+	TIM2->SR &= ~TIM_SR_UIF;  
+	spi1_display2("here");            //IMU 2 Rotation prints     
     AccelData wheel, fork;
-    if (TIM2->SR & TIM_SR_UIF)          // check update flag set?          
+    if (1)          // check update flag set?          
     {
         TIM2->SR &= ~TIM_SR_UIF;        // clear it (write 0)
 
@@ -385,13 +390,23 @@ void TIM2_IRQHandler(void)
         char* IMU2_x_Rot = "-";
         char* IMU2_y_Rot = "-";
         char* IMU2_z_Rot = "-";
+        // char* str1 = " %c%c%c%c %c%c%c%c %c%c%c%c ", IMU1_x_Accel[0], IMU1_x_Accel[1], IMU1_x_Accel[2], IMU1_x_Accel[3],
+		// 	IMU1_y_Accel[0], IMU1_y_Accel[1], IMU1_y_Accel[2], IMU1_y_Accel[3],
+		// 	IMU1_z_Accel[0], IMU1_z_Accel[1], IMU1_z_Accel[2], IMU1_z_Accel[3];
+		// char* str2 = " %c%c%c%c %c%c%c%c %c%c%c%c ", IMU2_x_Accel[0], IMU2_x_Accel[1], IMU2_x_Accel[2], IMU2_x_Accel[3],
+		// 	IMU2_y_Accel[0], IMU2_y_Accel[1], IMU2_y_Accel[2], IMU2_y_Accel[3],
+		// 	IMU2_z_Accel[0], IMU2_z_Accel[1], IMU2_z_Accel[2], IMU2_z_Accel[3];
         
-        printf("MPU @ 0x68: %s, %s, %s\n", IMU1_x_Accel, IMU1_y_Accel, IMU1_z_Accel);
-        full_data_write("test.csv", time,                   //IMU 1+2 prints
-        IMU1_x_Accel, IMU1_y_Accel, IMU1_z_Accel,           //IMU 1 Acceleration prints
-        IMU1_x_Rot, IMU1_y_Rot, IMU1_z_Rot,                 //IMU 1 Rotation prints
-        IMU2_x_Accel, IMU2_y_Accel, IMU2_z_Accel,           //IMU 2 Acceleration prints
-        IMU2_x_Rot, IMU2_y_Rot, IMU2_z_Rot);                //IMU 2 Rotation prints                
+        // spi1_display2(str2);
+        // printf("MPU @ 0x68: %s, %s, %s\n", IMU1_x_Accel, IMU1_y_Accel, IMU1_z_Accel);
+        // full_data_write("test.csv", time,                   //IMU 1+2 prints
+        // IMU1_x_Accel, IMU1_y_Accel, IMU1_z_Accel,           //IMU 1 Acceleration prints
+        // IMU1_x_Rot, IMU1_y_Rot, IMU1_z_Rot,                 //IMU 1 Rotation prints
+        // IMU2_x_Accel, IMU2_y_Accel, IMU2_z_Accel,           //IMU 2 Acceleration prints
+        // IMU2_x_Rot, IMU2_y_Rot, IMU2_z_Rot);    
+
+		// char* str1 = str_to_disp(IMU1_x_Accel, IMU1_y_Accel, IMU1_z_Accel);
+		// spi1_display2(str1);            //IMU 2 Rotation prints                
     }
 }
 
@@ -412,4 +427,31 @@ void SD_setup(char* fn){
     //         print_error(res, fn);
 
     
+}
+
+char* str_to_disp(char* x, char* y, char* z){
+	char* str = malloc(16 * sizeof(char));
+	char str_temp[] = "                ";
+	strcpy(str, str_temp);
+	int len;
+	if (strlen(x) > 4) len = 4;
+	else len = strlen(x);
+	for(int i = len; i > 0; i--){
+		char temp = x[len - i];
+		char temp_2 = str[5 - i];
+		str[5 - i] = x[len - i];
+		// str[5 - i] = 'A';
+		// int a = 1;
+	}
+	if (strlen(y) > 4) len = 4;
+	else len = strlen(y);
+	for(int i = len; i > 0; i--){
+		str[11 - i] = y[len - i];
+	}
+	if (strlen(z) > 4) len = 4;
+	else len = strlen(z);
+	for(int i = len; i > 0; i--){
+		str[15 - i] = z[len - i];
+	}
+	return str;
 }

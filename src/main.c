@@ -8,6 +8,7 @@
 #include "mpu_i2c.h"
 #include "SD.h"
 #include "ff.h"
+#include "oled.h"
 
 
 #ifdef active
@@ -42,6 +43,10 @@ int main() {
 //Alarm tests
 // #define TEST_ALARM
 
+//OLED tests
+// #define oled_enable
+// #define oled_int
+
 //Hard coded SD tests
 // #define testSD   // command shell to validate
 // #define testSD_1 // Header itself
@@ -54,7 +59,7 @@ int main() {
 // #define testSD_6 // csv data type with rand data writes for infinity
 
 //Integration Tests
-#define test_int // timer call sd writes
+// #define test_int // timer call sd writes
 // #define i2c_test
 
 
@@ -433,9 +438,9 @@ int main() {
     
     res = f_unlink("test.csv");
         if (res != FR_OK)
-            print_error(res, "this.csv");
+            print_error(res, "test.csv");
 
-    write_header();
+    write_header("test.csv");
     
     TIM2_50ms_Init();
     
@@ -490,4 +495,66 @@ int main() {
     }
 }
 
+#endif
+
+#ifdef oled_enable
+int main(){
+    init_spi1();
+    spi1_init_oled();
+    char* str1 = "Hello World";
+    char* str2 ="Guess Who";
+    spi1_display1(str1);
+    spi1_display2(str2);
+}
+#endif
+#ifdef oled_int
+int main() {
+    internal_clock();
+
+    enable_ports();
+    init_i2c();
+    init_usart5();
+    mpu6050_init(0x68);
+    // mpu6050_init(0x69);
+
+    enable_tty_interrupt();
+
+    // set_sd_stream();
+    setbuf(stdin,0);
+    setbuf(stdout,0);
+    setbuf(stderr,0);
+    init_spi1();
+    spi1_init_oled();
+    spi1_display1("Where my");
+    spi1_display2("aaaaaaaaaaaaaaa");
+    spi1_display1("bbbbb");
+    spi1_display2("ccccc");
+
+    char* fn = "test.csv"; //mut be changed in tim2_irqhandler as well
+    // SD_setup(fn); //mount and remove previous file by name fn
+    FATFS fstorage;
+    FATFS* fs = &fstorage;
+
+    //Mounting cmds
+    // FRESULT res = f_mount(NULL, "", 1); // make sure unmounted
+    FRESULT res = f_mount(fs, "", 1); //mount   
+    // if (res != FR_OK){
+    //     print_error(res, "Error occurred while mounting");
+    // }
+
+    
+    // res = f_unlink("test.csv");
+    //     if (res != FR_OK)
+    //         print_error(res, "test.csv");
+
+    // write_header("test.csv");
+    
+    // TIM2_50ms_Init();
+    spi1_display2("test");
+    
+
+    for (;;){
+        __WFI();
+    }
+}
 #endif
