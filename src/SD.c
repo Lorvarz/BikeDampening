@@ -286,23 +286,29 @@ bool inline SDStable()
 }
 
 int imu_val_update(int raw){
-    // raw = raw * 1000;
-//    int bit_const = 16384; // 2^15/2 or 2^14
-//    int grav_const = 10; // m/s^2
-//    int div = bit_const * grav_const;
-   return (round(raw));// / div));
+    raw = raw * 1000;
+   int bit_const = 16384; // 2^15/2 or 2^14
+   int grav_const = 10; // m/s^2
+   int div = bit_const * grav_const;
+   return (round(raw/ div));
 
 }
 
 char* int_to_str(int read){
+    //Check sign of raw data and remove for now
+    int sign = 1;
+    if (read < 1) sign = -1;
+    read = abs(read);
     
+    //Get the number of digits to write
     int dig_len;
     if (read < 1)
         dig_len = 1;
     else
         dig_len = log10(read) + 1;
     
-    char* str = malloc( dig_len * sizeof(char) + 1);
+    //Allocate space for the data to write (dig_len + sign + null)
+    char* str = malloc( (dig_len + 2) * sizeof(char));
     for( int i = dig_len; i > 0; i--){
         int j = i;
         int k = 1;
@@ -311,10 +317,12 @@ char* int_to_str(int read){
             j--;
         }
         int temp = (read / k) % 10;
-        str[dig_len - i] = temp + '0';
+        str[dig_len - i + 1] = temp + '0';
     }
-    str[dig_len] = '\0';
+    str[dig_len + 1] = '\0';
     if (str == NULL) str[0] = 0;
+    if (sign == 1) str[0] = ' ';
+    else str[0] = '-';
     return (str);
 }
 
@@ -329,8 +337,8 @@ void TIM2_50ms_Init(void)
     RCC->APB1ENR |= RCC_APB1ENR_TIM2EN;
 
     // Timing (psc arr and cnt)
-    TIM2->PSC = (uint16_t)(SystemCoreClock / 1000U - 1U); //PSC = (48 000 000 / 1 000) – 1 = 47 999
-    TIM2->ARR = 50U - 1U;                                 /* period     */
+    TIM2->PSC = (uint16_t)(48000000U / 48000U - 1U); //PSC = (48 000 000 / 48 000) – 1 = 999
+    TIM2->ARR = 20U - 1U;                                 /* period     */
     TIM2->CNT = 0;                                        /* reset CNT  */
 
     
@@ -366,20 +374,19 @@ void TIM2_IRQHandler(void)
         char* IMU1_x_Accel = int_to_str(imu_val_update(wheel.ax));
         char* IMU1_y_Accel = int_to_str(imu_val_update(wheel.ay));
         char* IMU1_z_Accel = int_to_str(imu_val_update(wheel.az));
-        char* IMU2_x_Accel = "12"; //int_to_str(imu_val_update(fork.ax));
-        char* IMU2_y_Accel = "12"; //int_to_str(imu_val_update(fork.ay));
-        char* IMU2_z_Accel = "12"; //int_to_str(imu_val_update(fork.az));
+        char* IMU2_x_Accel = "-"; //int_to_str(imu_val_update(fork.ax));
+        char* IMU2_y_Accel = "-"; //int_to_str(imu_val_update(fork.ay));
+        char* IMU2_z_Accel = "-"; //int_to_str(imu_val_update(fork.az));
         
-        char* time = "12";
-        char* IMU1_x_Rot = "12";
-        char* IMU1_y_Rot = "12";
-        char* IMU1_z_Rot = "12";
-        char* IMU2_x_Rot = "12";
-        char* IMU2_y_Rot = "12";
-        char* IMU2_z_Rot = "12";
+        char* time = "-";
+        char* IMU1_x_Rot = "-";
+        char* IMU1_y_Rot = "-";
+        char* IMU1_z_Rot = "-";
+        char* IMU2_x_Rot = "-";
+        char* IMU2_y_Rot = "-";
+        char* IMU2_z_Rot = "-";
         
-        printf("%s\n", IMU1_x_Accel);
-        printf("MPU @ 0x68: %s, %s, %s, %s, %s, %s \n", IMU1_x_Accel, IMU1_y_Accel, IMU1_z_Accel, IMU2_x_Accel, IMU2_y_Accel, IMU2_z_Accel);
+        printf("MPU @ 0x68: %s, %s, %s\n", IMU1_x_Accel, IMU1_y_Accel, IMU1_z_Accel);
         full_data_write("test.csv", time,                   //IMU 1+2 prints
         IMU1_x_Accel, IMU1_y_Accel, IMU1_z_Accel,           //IMU 1 Acceleration prints
         IMU1_x_Rot, IMU1_y_Rot, IMU1_z_Rot,                 //IMU 1 Rotation prints

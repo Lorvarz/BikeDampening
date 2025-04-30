@@ -43,7 +43,7 @@ int main() {
 // #define TEST_ALARM
 
 //Hard coded SD tests
-#define testSD   // command shell to validate
+// #define testSD   // command shell to validate
 // #define testSD_1 // Header itself
 // #define testSD_2 // Header + Header (test Append)
 // #define testSD_3 // Hard coded number 
@@ -54,7 +54,7 @@ int main() {
 // #define testSD_6 // csv data type with rand data writes for infinity
 
 //Integration Tests
-// #define test_int // timer call sd writes
+#define test_int // timer call sd writes
 // #define i2c_test
 
 
@@ -429,6 +429,12 @@ int main() {
     if (res != FR_OK){
         print_error(res, "Error occurred while mounting");
     }
+
+    
+    res = f_unlink("test.csv");
+        if (res != FR_OK)
+            print_error(res, "this.csv");
+
     write_header();
     
     TIM2_50ms_Init();
