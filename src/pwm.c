@@ -2,6 +2,7 @@
 #include <math.h>   // for M_PI
 #include <stdio.h>
 #include "pwm.h"
+int toggle = 0;
 
 void setup_pwm(void) {
     // Generally the steps are similar to those in setup_tim3
@@ -68,8 +69,6 @@ void set_pos(int pulse_width_us, int motor)
 
 void take_button_input()
 {
-    static int toggle = 0;
-
     // Enable GPIOC clock
     RCC->AHBENR |= RCC_AHBENR_GPIOCEN;
 
@@ -80,7 +79,7 @@ void take_button_input()
     GPIOC->PUPDR &= ~(0x3 << (5 * 2));
     GPIOC->PUPDR |= (0x2 << (5 * 2));
 
-    static int prev_state = 0;
+    // static int prev_state = 0;
 
     // Configure EXTI line 5 for PC5
     SYSCFG->EXTICR[1] &= ~(0xF << 4); // Clear EXTI5 bits
@@ -94,7 +93,6 @@ void take_button_input()
 
 // Interrupt handler for EXTI line 5 (PC5)
 void EXTI4_15_IRQHandler(void) {
-    static int toggle = 0;
 
     // Check if EXTI line 5 triggered the interrupt
     if (EXTI->PR & (1 << 5)) {
@@ -102,11 +100,8 @@ void EXTI4_15_IRQHandler(void) {
         EXTI->PR |= (1 << 5);
 
         // Toggle compression damper between 0 and 90 degrees
-        if (toggle) {
-            set_compression_damp(0);
-        } else {
-            set_compression_damp(90);
-        }
-        toggle = !toggle;
+        set_compression_damp(90 - (90 * toggle));
+
+        toggle = (toggle + 1) % 2;
     }
 }

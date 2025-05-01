@@ -48,7 +48,7 @@ int main() {
 // #define oled_int
 
 //Hard coded SD tests
-// #define testSD   // command shell to validate
+#define testSD   // command shell to validate
 // #define testSD_1 // Header itself
 // #define testSD_2 // Header + Header (test Append)
 // #define testSD_3 // Hard coded number 
@@ -59,7 +59,7 @@ int main() {
 // #define testSD_6 // csv data type with rand data writes for infinity
 
 //Integration Tests
-#define test_int // timer call sd writes
+// #define test_int // timer call sd writes
 // #define i2c_test
 
 
@@ -415,7 +415,6 @@ int main() {
     init_usart5();
     mpu6050_init(0x68);
     mpu6050_init(0x69);
-    setup_pwm();
 
     enable_tty_interrupt();
 
@@ -424,6 +423,12 @@ int main() {
     setbuf(stdout,0);
     setbuf(stderr,0);
 
+    /* Set up for alram */
+    setupDAC();
+    setupTIM6();
+
+    // setup_pwm();
+    
     char* fn = "test.csv"; //mut be changed in tim2_irqhandler as well
     // SD_setup(fn); //mount and remove previous file by name fn
     FATFS fstorage;
@@ -442,13 +447,9 @@ int main() {
             print_error(res, "test.csv");
 
     write_header("test.csv");
-    
+    // take_button_input();
     TIM2_50ms_Init();
-
-    take_button_input();
     
-    setupTIM6();
-    setupDAC();
 
     for (;;){
         __WFI();
@@ -531,9 +532,7 @@ int main() {
     init_spi1();
     spi1_init_oled();
     spi1_display1("Where my");
-    spi1_display2("aaaaaaaaaaaaaaa");
-    spi1_display1("bbbbb");
-    spi1_display2("ccccc");
+
 
     char* fn = "test.csv"; //mut be changed in tim2_irqhandler as well
     // SD_setup(fn); //mount and remove previous file by name fn
