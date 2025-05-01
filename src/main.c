@@ -48,7 +48,7 @@ int main() {
 // #define oled_int
 
 //Hard coded SD tests
-#define testSD   // command shell to validate
+// #define testSD   // command shell to validate
 // #define testSD_1 // Header itself
 // #define testSD_2 // Header + Header (test Append)
 // #define testSD_3 // Hard coded number 
@@ -59,7 +59,7 @@ int main() {
 // #define testSD_6 // csv data type with rand data writes for infinity
 
 //Integration Tests
-// #define test_int // timer call sd writes
+#define test_int // timer call sd writes
 // #define i2c_test
 
 
@@ -75,8 +75,8 @@ int main() {
     FATFS* fs = &fstorage;
 
     //Mounting cmds
-    FRESULT res = f_mount(NULL, "", 1); // make sure unmounted
-    res = f_mount(fs, "", 1); //mount
+    // FRESULT res = f_mount(NULL, "", 1); // make sure unmounted
+    FRESULT res = f_mount(fs, "", 1); //mount
     if (res != FR_OK){
         print_error(res, "Error occurred while mounting");
     }
@@ -413,8 +413,6 @@ int main() {
     enable_ports();
     init_i2c();
     init_usart5();
-    mpu6050_init(0x68);
-    mpu6050_init(0x69);
 
     enable_tty_interrupt();
 

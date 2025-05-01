@@ -91,7 +91,7 @@ void setPinPull(GPIO_TypeDef* port, uint8_t start, uint8_t end, pullType type) {
 #define SOUND_FREQ (1000)
 #define N (1000)
 #define RATE (20000)
-#define VOLUME (500)
+#define VOLUME (440)
 
 short int wavetable[N];
 int step = (SOUND_FREQ * N / RATE) * (1<<16);;
@@ -203,7 +203,7 @@ void TIM6_DAC_IRQHandler()
 bool isConnStable()
 {
     return false;
-    // return SDStable() && mpuStable();
+    return SDStable() && mpuStable();
 }
 
 #endif
