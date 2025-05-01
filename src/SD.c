@@ -283,9 +283,8 @@ void init_lcd_spi(){
 // checks if the SD card's connection is stable
 bool inline SDStable()
 {
-    return !SD_is_setup || 
-            (!SD_write_error && (!(USART5->ISR & USART_ISR_TEACK) || !(USART5->ISR & USART_ISR_REACK)))
-           ;
+    return !SD_is_setup || (!SD_write_error );//&& (!(USART5->ISR & USART_ISR_TEACK) || !(USART5->ISR & USART_ISR_REACK)))
+           
 }
 
 int imu_val_update(int raw){
@@ -341,7 +340,7 @@ void TIM2_50ms_Init(void)
 
     // Timing (psc arr and cnt)
     TIM2->PSC = (uint16_t)(48000000U / 48000U - 1U); //PSC = (48 000 000 / 48 000) – 1 = 999
-    TIM2->ARR = 20U - 1U;                                 /* period     */
+    TIM2->ARR = 20000U - 1U;                                 /* period     */
     TIM2->CNT = 0;                                        /* reset CNT  */
 
     
@@ -351,7 +350,7 @@ void TIM2_50ms_Init(void)
 
     // NVIC setup
     NVIC_EnableIRQ(TIM2_IRQn);
-    NVIC_SetPriority(TIM2_IRQn, 1);
+    NVIC_SetPriority(TIM2_IRQn, 16);
 }
 
 

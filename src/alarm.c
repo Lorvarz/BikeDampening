@@ -123,13 +123,14 @@ void setupTIM6()
     TIM6->ARR = TIM6_ARR;
     TIM6->DIER |= TIM_DIER_UIE;
     NVIC_EnableIRQ(TIM6_IRQn);
+    NVIC_SetPriority(TIM6_IRQn, 15);
     TIM6->CR1 |= TIM_CR1_CEN;
     setBits(TIM6->CR2, 6, 4, 0b010); //Master update mode
 }
 
 bool isConnected = true;
 uint8_t numPulses = 3;
-uint16_t pulseLength = 100; // measured in cycles
+uint16_t pulseLength = 10; // measured in cycles
 uint16_t intervalLength = 50; // measured in ISR calls
 uint16_t resetLength = 150; // measured in ISR calls
 
@@ -173,6 +174,7 @@ void TIM6_DAC_IRQHandler()
             if (++cyclesPlayed == pulseLength)
             {
                 pulsesPlayed++;
+                cyclesPlayed = 0;
             }
         }
 
@@ -182,8 +184,10 @@ void TIM6_DAC_IRQHandler()
         sample += 2048;
         DAC->DHR12R1 = sample;
     } else if (!inReset && intervalCounter < intervalLength)
-    {
-        if (++intervalCounter == intervalLength)
+    {   
+        intervalCounter++;
+        pulsesPlayed = 0;
+        if (intervalCounter == intervalLength)
         {
             inReset = true;
             intervalCounter = 0;

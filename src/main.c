@@ -11,7 +11,7 @@
 #include "oled.h"
 #include "pwm.h"
 
-
+// #define active
 #ifdef active
 
 
@@ -29,7 +29,7 @@ int main() {
     setupDAC();
     setupTIM6();
 
-    /* Set up for pwm*/
+    setup_pwm();
     void take_button_input(); 
 
     for (;;){
@@ -63,7 +63,7 @@ int main() {
 // #define exti_test
 
 //Integration Tests
-#define test_int // timer call sd writes
+// #define test_int // timer call sd writes
 // #define i2c_test
 
 
@@ -409,7 +409,7 @@ int main() {
 }
 #endif
 
-
+#define test_int
 #ifdef test_int
 int main() {
     internal_clock();
@@ -425,10 +425,15 @@ int main() {
     setbuf(stdout,0);
     setbuf(stderr,0);
 
+    
+
+    setup_pwm();
+    take_button_input();
     /* Set up for alram */
+    
     setupDAC();
     setupTIM6();
-
+    
     // setup_pwm();
     
     char* fn = "test.csv"; //mut be changed in tim2_irqhandler as well
@@ -452,6 +457,7 @@ int main() {
     // take_button_input();
     TIM2_50ms_Init();
     
+
 
     for (;;){
         __WFI();
@@ -564,7 +570,7 @@ int main() {
     }
 }
 #endif
-
+// #define exti_test
 #ifdef exti_test
 int main(){
     internal_clock();
