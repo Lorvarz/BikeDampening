@@ -358,9 +358,8 @@ void TIM2_50ms_Init(void)
 void TIM2_IRQHandler(void)
 {
 	TIM2->SR &= ~TIM_SR_UIF;  
-	spi1_display2("here");            //IMU 2 Rotation prints
-    mpu6050_init(0x68);
-    mpu6050_init(0x69);     
+	// spi1_display2("here");            //IMU 2 Rotation prints
+        
     AccelData wheel, fork;
     if (1)          // check update flag set?          
     {
@@ -407,7 +406,8 @@ void TIM2_IRQHandler(void)
         IMU1_x_Rot, IMU1_y_Rot, IMU1_z_Rot,                 //IMU 1 Rotation prints
         IMU2_x_Accel, IMU2_y_Accel, IMU2_z_Accel,           //IMU 2 Acceleration prints
         IMU2_x_Rot, IMU2_y_Rot, IMU2_z_Rot);    
-
+        mpu6050_init(0x68);
+        mpu6050_init(0x69); 
 		// char* str1 = str_to_disp(IMU1_x_Accel, IMU1_y_Accel, IMU1_z_Accel);
 		// spi1_display2(str1);            //IMU 2 Rotation prints                
     }

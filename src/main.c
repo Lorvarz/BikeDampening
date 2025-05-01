@@ -9,6 +9,7 @@
 #include "SD.h"
 #include "ff.h"
 #include "oled.h"
+#include "pwm.h"
 
 
 #ifdef active
@@ -57,6 +58,9 @@ int main() {
 //Variable SD tests
 // #define testSD_5 // Header + variable data writes for infinity
 // #define testSD_6 // csv data type with rand data writes for infinity
+
+//Motor test
+// #define exti_test
 
 //Integration Tests
 #define test_int // timer call sd writes
@@ -557,6 +561,23 @@ int main() {
 
     for (;;){
         __WFI();
+    }
+}
+#endif
+
+#ifdef exti_test
+int main(){
+    internal_clock();
+    // init_usart5();
+ 
+
+    setup_pwm();
+    take_button_input(); //enable ports
+    
+
+    for (;;){
+        __WFI();
+ 
     }
 }
 #endif

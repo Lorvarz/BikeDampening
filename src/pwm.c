@@ -2,6 +2,7 @@
 #include <math.h>   // for M_PI
 #include <stdio.h>
 #include "pwm.h"
+
 int toggle = 0;
 
 void setup_pwm(void) {
@@ -47,9 +48,9 @@ void setup_pwm(void) {
 //Takes a number in between 0 and 90, and sets the motor position to that degree
 void set_compression_damp(int deg) {
     //pulse width in microseconds dependent on deg
-    int pulse_width = 500 + ((deg * 1000) / 180);
+    int pulse_width = 1500 + ((deg * 400) / 1260);
 
-    set_pos(pulse_width, 1);
+    set_pos(pulse_width, 2);
 }
 
 void set_rebound_damp(int deg) {
@@ -71,6 +72,7 @@ void take_button_input()
 {
     // Enable GPIOC clock
     RCC->AHBENR |= RCC_AHBENR_GPIOCEN;
+    RCC->APB2ENR |= RCC_APB2ENR_SYSCFGCOMPEN;
 
     // Set PC5 as input (00)
     GPIOC->MODER &= ~(0x3 << (5 * 2));
@@ -82,11 +84,11 @@ void take_button_input()
     // static int prev_state = 0;
 
     // Configure EXTI line 5 for PC5
-    SYSCFG->EXTICR[1] &= ~(0xF << 4); // Clear EXTI5 bits
-    SYSCFG->EXTICR[1] |= (0x2 << 4);  // Set EXTI5 to port C
+    SYSCFG->EXTICR[1] &= ~SYSCFG_EXTICR2_EXTI5; // Clear EXTI5 bits
+    SYSCFG->EXTICR[1] |= SYSCFG_EXTICR2_EXTI5_PC;  // Set EXTI5 to port C
 
-    EXTI->IMR |= (1 << 5);   // Unmask interrupt
-    EXTI->FTSR |= (1 << 5);  // Trigger on falling edge (button press)
+    EXTI->IMR |= EXTI_IMR_IM5;   // Unmask interrupt
+    EXTI->RTSR |= EXTI_RTSR_RT5;  // Trigger on falling edge (button press)
 
     NVIC_EnableIRQ(EXTI4_15_IRQn); // Enable EXTI4_15 interrupt in NVIC
 }
@@ -94,14 +96,13 @@ void take_button_input()
 // Interrupt handler for EXTI line 5 (PC5)
 void EXTI4_15_IRQHandler(void) {
 
-    // Check if EXTI line 5 triggered the interrupt
-    if (EXTI->PR & (1 << 5)) {
-        // Clear the pending interrupt flag
-        EXTI->PR |= (1 << 5);
+    // Clear the pending interrupt flag
+    
+    printf("boost\n");
+    // Toggle compression damper between 0 and 90 degrees
+    set_rebound_damp(90 - (90 * toggle));
 
-        // Toggle compression damper between 0 and 90 degrees
-        set_compression_damp(90 - (90 * toggle));
-
-        toggle = (toggle + 1) % 2;
-    }
+    toggle = (toggle + 1) % 2;
+    // nano_wait(500000);
+    EXTI->PR = EXTI_PR_PR5;
 }

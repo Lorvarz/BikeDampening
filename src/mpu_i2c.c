@@ -16,6 +16,8 @@
 #include "fifo.h"
 #include "tty.h"
 
+bool mpu_error;
+
 //#define usart //uncomment for testing i2c alone
 char* interrupt_getchar(){
     while(fifo_newline(&input_fifo) == 0){
@@ -250,12 +252,14 @@ int mpu_read_accel(uint8_t addr, AccelData *accel)
     if (i2c_senddata(addr, &reg, 1) < 0) {
         mpuError = true;
         printf("MPU @ 0x%02X write failed\n", addr);
+        mpu_error = true;
         return -1;
     }
 
     if (i2c_recvdata(addr, raw, 6) < 0) {
         mpuError = true;
         printf("MPU @ 0x%02X read failed\n", addr);
+        mpu_error = true;
         return -1;
     }
 
@@ -275,9 +279,11 @@ void mpu6050_init(uint8_t addr)
 
     if (i2c_senddata(addr, config, 2) < 0){
         printf("Failed to wake MPU @ 0x%02x\n", addr);
+        mpu_error = true;
+
     }
     else{
-        printf("MPU @ 0x%02x\n", addr);
+        //printf("MPU @ 0x%02x\n", addr);
     }
 }
 
@@ -291,5 +297,8 @@ void setup_imu(){
 
 bool inline mpuStable()
 {
+    if (mpu_error){
+        return(false);
+    }
     return !mpuError;
 }

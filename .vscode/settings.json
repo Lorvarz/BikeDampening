@@ -4,6 +4,9 @@
         "stdio.h": "c",
         "commands.h": "c",
         "ff.h": "c",
-        "fifo.h": "c"
+        "fifo.h": "c",
+        "pwm.h": "c",
+        "tty.h": "c",
+        "alarm.h": "c"
     }
 }
